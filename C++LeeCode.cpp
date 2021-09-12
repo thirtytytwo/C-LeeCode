@@ -4,6 +4,7 @@
 #include "limits.h"
 #include <algorithm>
 #include <queue>;
+#include <stack>;
 
 using namespace std;
 
@@ -185,6 +186,40 @@ public:
 			}
 		}
 		return dp[0][n - 1];
+	}
+	bool checkValidStringByStack(string s) {
+		stack<int>leftStack;
+		stack<int>starStack;
+		int n = s.size();
+		for (int i = 0; i < n; ++i) {
+			if (s[i] == '(') {
+				leftStack.push(i);//将左括号的下标依次入栈
+			}
+			else if (s[i] == '*') {
+				starStack.push(i);//将星号的下标依次入栈
+			}
+			else {//遇到右括号的情况
+				if (!leftStack.empty()) {
+					leftStack.pop();//优先检测是否有多的左括号，有的话先拿左括号进行配对
+				}
+				else if (!starStack.empty()) {
+					starStack.pop();//没有左括号就用星号进行配对
+				}
+				else {
+					return false;//证明右括号多出，返回假
+				}
+			}
+		}
+		while (!leftStack.empty() && !starStack.empty()) {//将多余的左括号和星号配对
+			int leftIndex = leftStack.top();//返回左括号最顶元素
+			leftStack.pop();//左括号出栈
+			int starIndex = starStack.top();//返回星号最顶元素
+			starStack.pop();//星号出栈
+			if (leftIndex > starIndex) {//如果有这个情况，则证明左括号的位置在星号右边，即不能和星号配对
+				return false;
+			}
+		}
+		return leftStack.empty();
 	}
 };
 
