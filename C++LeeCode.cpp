@@ -5,10 +5,11 @@
 #include <algorithm>
 #include <queue>;
 #include <stack>;
+#include <unordered_map>
 
 using namespace std;
 
-typedef pair<int, int> _p;//pair将一对值组合成一个值，这一对值可以具有不同的数据类型（T1和T2），两个值可以分别用pair的两个公有函数first和second访问。是stl内部提供
+typedef pair<int, float> _p;//pair将一对值组合成一个值，这一对值可以具有不同的数据类型（T1和T2），两个值可以分别用pair的两个公有函数first和second访问。是stl内部提供
 
 
 class Solution {
@@ -221,9 +222,38 @@ public:
 		}
 		return leftStack.empty();
 	}
+	//(9.13 leecode447)
+	static int numberOfBoomerangs(vector<vector<int>>& points) {
+		int ans = 0;//记录答案
+		for (auto& p : points) {
+			unordered_map<int, int> cnt;//利用哈希表存储相同距离出现的次数，key是距离，value是次数
+			for (auto& q : points) {
+				int dis = (p[0] - q[0]) * (p[0] - q[0]) + (p[1] - q[1]) * (p[1] - q[1]);//直角边平方和求斜边
+				++cnt[dis];//给key为dis的值加1，表示，这个距离出现的次数加一
+			}
+			for (auto m : cnt) {
+				ans += m.second * (m.second - 1);//最后总结这个循环各种距离出现的次数，因为例题中设计排列组合，需要将结果排列组合，m个中取出两个两两排列。
+			}
+		}
+		return ans;//返回答案
+		//自己写时候的错误：将哈希表声明在循环外，这样就导致，哈希表中记录的数据有重复，因为我们是对vector中的每个元素对应所有元素都遍历了一遍，存储在外面就会导致，遍历到的相同次数比正确的答案多了一倍
+		//因为重复了，所以，就导致ans出错。比正确答案大很多
+	}
 };
 
 int main() {
-	string n = "(*)";
-	cout << Solution::checkValidString(n)<<endl;
+	vector<vector<int>> test;
+	vector<int> b;
+	b.push_back(0);
+	b.push_back(0);
+	test.push_back(b);
+	b.clear();
+	b.push_back(1);
+	b.push_back(0);
+	test.push_back(b);
+	b.clear();
+	b.push_back(2);
+	b.push_back(0);
+	test.push_back(b);
+	Solution::numberOfBoomerangs(test);
 }
