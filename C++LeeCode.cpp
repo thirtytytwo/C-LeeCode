@@ -239,21 +239,46 @@ public:
 		//自己写时候的错误：将哈希表声明在循环外，这样就导致，哈希表中记录的数据有重复，因为我们是对vector中的每个元素对应所有元素都遍历了一遍，存储在外面就会导致，遍历到的相同次数比正确的答案多了一倍
 		//因为重复了，所以，就导致ans出错。比正确答案大很多
 	}
+	//(9.14 leecode 524)
+	static bool isSame(string dicString,string sString) {
+		int n = dicString.size();
+		int m = sString.size();
+		if (n > m) {//如果n大于m，则表示dic中的字符串比s中的要长，不符合题意，所以return false
+			return false;
+		}
+		int v = 0;//记录位置
+		for (char s : dicString) {
+			while (v < m && sString[v] != s)
+			{
+				v++;//如果在m的范围内没搜到，就搜下一个
+			}
+			if (v >= m) {
+				return false;//根据上列发现遍历完整个string都没有搜到这个字符，则表示这个字符串不合题意，所以return false
+			}
+
+			v++;//如果进入上列的判断条件，则表示搜索到了，则下一个搜索位置为 v+1
+		}//搜索完了，发现整个dictionary的字符都遍历一边也没有return false，则证明匹配，应该返回真
+		return true;
+	}
+	static bool Cmp(string& a, string& b) {
+		if (a.size() == b.size()) return a < b;//如果两个字符串的长度都一样，则根据他们存储的地址，因为vector是申请一块连续内存进行存储，那么，下标靠前的存储地址就靠前，所以这里是根据他们的存储地址进行升序排列
+		else return a.size() > b.size();//如果不一样长，则优先排列长的
+	}
+	static string findLongestWord(string s, vector<string>& dictionary) {
+		//对dictionary进行一个重排
+		sort(dictionary.begin(), dictionary.end(), Cmp);
+		//类似foreach，昨天的题也用过，将重排后的dictionary中的每个元素都拿来和s比较
+		for (string& t : dictionary) {
+			if (isSame(t, s)) {
+				return t;//找到了就返回这个字符串
+			}
+		}
+		return " ";//找不到根据题意返回一个空格
+	}
 };
 
 int main() {
-	vector<vector<int>> test;
-	vector<int> b;
-	b.push_back(0);
-	b.push_back(0);
-	test.push_back(b);
-	b.clear();
-	b.push_back(1);
-	b.push_back(0);
-	test.push_back(b);
-	b.clear();
-	b.push_back(2);
-	b.push_back(0);
-	test.push_back(b);
-	Solution::numberOfBoomerangs(test);
+	string s = "abpcplea";
+	vector<string> dic = { "ale","apple","monkey","plea" };
+	Solution::findLongestWord(s, dic);
 }
