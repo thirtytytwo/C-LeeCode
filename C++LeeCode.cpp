@@ -275,6 +275,24 @@ public:
 		}
 		return " ";//找不到根据题意返回一个空格
 	}
+	//(9.15 leecode 162)
+	//题目要求时间复杂度在logN程度，优先考虑二分法
+	int findPeakElement(vector<int>& nums) {
+		int left = 0;
+		int right = nums.size() - 1;//二分法的两个指针
+		while (left < right) {
+			int mid = (left + right) / 2;//中间值
+			if (nums[mid] < nums[mid + 1]) {//根据题目要求，如果小于后面一个值，根据题意，如果是有峰的情况下必然存在一个峰在后面
+				left = mid + 1;//继续二分查找
+			}
+			else {
+				right = mid;//因为题意不可能有连续的两个数相当，所以这个意思是，当大于的时候就移动right指针，继续二分
+			}
+		}
+		return left;//返回符合题意的数的下标
+		//这一题能看出自己能想到二分，也能知道大致步骤，但是对于判断更改left和right指针的条件，还有具体怎么更改还是不太清楚，得加强
+	}
+	
 };
 
 int main() {
