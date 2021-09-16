@@ -6,6 +6,7 @@
 #include <queue>;
 #include <stack>;
 #include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
 
@@ -157,7 +158,7 @@ public:
 		}
 		return res;
 	}
-	//(9.12 leecode 678)动态规划，一般都利用vector储存每个子问题的结果，然后把子问题的结果归总成整个问题的结果
+	//(9.12 leecode678)动态规划，一般都利用vector储存每个子问题的结果，然后把子问题的结果归总成整个问题的结果
 	static bool checkValidString(string s) {
 		int n = s.size();
 		vector<vector<bool>> dp = vector<vector<bool>>(n, vector<bool>(n, false));
@@ -239,7 +240,7 @@ public:
 		//自己写时候的错误：将哈希表声明在循环外，这样就导致，哈希表中记录的数据有重复，因为我们是对vector中的每个元素对应所有元素都遍历了一遍，存储在外面就会导致，遍历到的相同次数比正确的答案多了一倍
 		//因为重复了，所以，就导致ans出错。比正确答案大很多
 	}
-	//(9.14 leecode 524)
+	//(9.14 leecode524)
 	static bool isSame(string dicString,string sString) {
 		int n = dicString.size();
 		int m = sString.size();
@@ -257,7 +258,7 @@ public:
 			}
 
 			v++;//如果进入上列的判断条件，则表示搜索到了，则下一个搜索位置为 v+1
-		}//搜索完了，发现整个dictionary的字符都遍历一边也没有return false，则证明匹配，应该返回真
+		}//搜索完了，发现整个dictionary的字符都遍历一边也没有returnfalse,则证明匹配，应该返回真
 		return true;
 	}
 	static bool Cmp(string& a, string& b) {
@@ -275,7 +276,7 @@ public:
 		}
 		return " ";//找不到根据题意返回一个空格
 	}
-	//(9.15 leecode 162)
+	//(9.15 leecode162)
 	//题目要求时间复杂度在logN程度，优先考虑二分法
 	int findPeakElement(vector<int>& nums) {
 		int left = 0;
@@ -292,11 +293,56 @@ public:
 		return left;//返回符合题意的数的下标
 		//这一题能看出自己能想到二分，也能知道大致步骤，但是对于判断更改left和right指针的条件，还有具体怎么更改还是不太清楚，得加强
 	}
-	
+	//9.16 leecode212 BFS解法
+	unordered_set<string> s, t;
+	vector<string> res;
+	vector<vector<char>> copy;
+	int n, m;
+	int dx[4] = { -1, 0, 1, 0 };//尤其注意这四个方向是否为顺序遍历，不要耍小聪明
+	int dy[4] = { 0, -1, 0, 1 };
+	void dfs(int i, int j, string cur, vector<vector<bool>>& vis) {
+		if (cur.size() > 10) {
+			return;
+		}
+		if (s.count(cur)) {
+			t.insert(cur);
+		}
+		for (int k = 0; k < 4; ++k) {
+			int xx = i + dx[k];
+			int yy = j + dy[k];
+			if (xx >= 0 && xx < n && yy >= 0 && yy < m && !vis[xx][yy]) {
+				vis[xx][yy] = true;
+				dfs(xx, yy, cur + copy[xx][yy], vis);
+				vis[xx][yy] = false;
+			}
+		}
+	}
+	vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+		for (string item : words) {
+			s.insert(item);
+		}
+		copy = board;
+		n = board.size();
+		m = board[0].size();
+
+		string s;
+		vector<vector<bool>> vis(n, vector<bool>(m));
+
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; j < m; ++j) {
+				vis[i][j] = true;
+				dfs(i, j, s + board[i][j], vis);
+				vis[i][j] = false;
+			}
+		}
+		for (string tt : t) {
+			res.push_back(tt);
+		}
+		return res;
+		//采用BFS搜索办法，如果出现测试不能全部通过，则注意四个方向的遍历，是否是围成圆的顺序方向，解答错误原因就是因为，先便利了x轴的两个方向然后再遍历y轴的两个方向
+	}
 };
 
 int main() {
-	string s = "abpcplea";
-	vector<string> dic = { "ale","apple","monkey","plea" };
-	Solution::findLongestWord(s, dic);
+
 }
