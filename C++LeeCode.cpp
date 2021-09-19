@@ -7,6 +7,7 @@
 #include <stack>;
 #include <unordered_map>
 #include <unordered_set>
+#include <math.h>
 
 using namespace std;
 
@@ -341,8 +342,72 @@ public:
 		return res;
 		//采用BFS搜索办法，如果出现测试不能全部通过，则注意四个方向的遍历，是否是围成圆的顺序方向，解答错误原因就是因为，先便利了x轴的两个方向然后再遍历y轴的两个方向
 	}
+	//9.17
+	static bool isValidSudoku(vector<vector<char>>& board) {
+		int h = board[0].size();
+		int v = board.size();
+		vector<unordered_set<int>> horizontal(h);
+		vector<unordered_set<int>> vertical(v);
+		vector<unordered_set<int>> nine(h *v);	
+
+		for (int i = 0; i < v; ++i) {
+			for (int j = 0; j < h; ++j) {
+				if (board[i][j] != '.') {
+					int index = board[i][j] - '0';
+					if (horizontal[j].count(index) || vertical[i].count(index) || nine[i / 3 * 3 + j / 3].count(index)) {
+						return false;
+					}
+					else {
+						horizontal[j].insert(index);
+						vertical[i].insert(index);
+						nine[i / 3 * 3 + j / 3].insert(index);
+					}
+				}
+			}
+		}
+		return true;
+	}
+	//9.19
+	//BFS算法，超时
+	int BFS(int n,int current,int copy, int count) {
+		if (current == n) {
+			return count;
+		}
+		if (current > n) {
+			return 1000000;
+		}
+
+		count++;
+		if (copy == 0) {
+			return BFS(n, current, current, count);
+		}
+		if (copy == current) {
+			return BFS(n, current + copy, copy, count);
+		}
+		else {
+			return (BFS(n, current, current, count) < BFS(n, current + copy, copy, count)) ? BFS(n, current, current, count) : BFS(n, current + copy, copy, count);
+		}
+
+	}
+	int minSteps(int n) {
+		return BFS(n, 1, 0, 0);
+	}
+	//动态规划
+	static int MinSteps(int n) {
+		//记录当前A字母个数时的粘贴次数，动态规划，把一个大的n分解成每一步的相加，空间换时间
+		vector<int> ans(n + 1, 0);//因为下面for循环=n的条件下也符合情况，但是只有n个元素的话会导致访问vec越界的情况，所以n+1
+		for (int i = 2; i <= n; ++i) {
+			ans[i] = i;//一个个粘贴，次数最多的解法
+			for (int j = 1; j * j <= i; ++j) {//这里其实j<=i也是也可以的，但是作者做了小优化，目前也不理解
+				if (i % j == 0) {
+					ans[i] = ans[j] + i / j;//利用因数，减少次数
+				}
+			}
+		}
+		return ans[n];
+	}
 };
 
 int main() {
-
+	Solution::MinSteps(3);
 }
