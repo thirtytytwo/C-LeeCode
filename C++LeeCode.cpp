@@ -406,8 +406,54 @@ public:
 		}
 		return ans[n];
 	}
+	//9.20感冒，先粘贴，理解往后推迟一天 leecode673
+	//9.21已上注释，但还不是很完善，这一题简易版在300，建议有空去做一下
+	static int findNumberOfLIS(vector<int>& nums) {
+		int n = nums.size(), maxLen = 0, ans = 0;
+		vector<int> dp(n), cnt(n);
+		for (int i = 0; i < n; ++i) {
+			//初始化，假设每个位置的最长子序列就只有他自己，每个位置的最长子序列个数也只有他自己
+			dp[i] = 1;
+			cnt[i] = 1;
+			for (int j = 0; j < i; ++j) {
+				if (nums[i] > nums[j]) {
+					if (dp[j] + 1 > dp[i]) {
+						dp[i] = dp[j] + 1;//更新前面数字比他小的个数
+						cnt[i] = cnt[j]; // 重置计数
+					}
+					else if (dp[j] + 1 == dp[i]) {//如果出现这个情况，就表示前一个数字并不是递增，所以现在这个位置是统计第二个子序列位置了，计数+1
+						cnt[i] += cnt[j];
+					}
+				}
+			}
+			if (dp[i] > maxLen) {
+				maxLen = dp[i];
+				ans = cnt[i]; // 重置计数
+			}
+			else if (dp[i] == maxLen) {//这里同理当dp[i]等于之前计算得到的最大长度时，则表示，这个递增子序列已经遍历完了，将对应的个数加到答案中
+				ans += cnt[i];
+			}
+		}
+		return ans;
+	}
+	//9.21 leecode中秋福利题58
+	static int lengthOfLastWord(string s) {
+		int count = 0;
+		int index = s.length() - 1;
+		while (s[index] == ' ') {
+			index--;//去除string最尾的空格
+		}
+		while (index >= 0 && s[index] != ' ') {
+			//>=0是因为需要考虑s中只有一个char的情况，>0会遍历不到那一个字符
+			//从末尾遍历s，符合条件让文字长度加1
+			count++;
+			index--;
+		}
+		return count;
+	}
 };
 
 int main() {
-	Solution::MinSteps(3);
+	vector<int> test = { 1,3,5,4,7 };
+	Solution::findNumberOfLIS(test);
 }
