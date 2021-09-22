@@ -13,6 +13,15 @@ using namespace std;
 
 typedef pair<int, float> _p;//pair将一对值组合成一个值，这一对值可以具有不同的数据类型（T1和T2），两个值可以分别用pair的两个公有函数first和second访问。是stl内部提供
 
+//9.22所用结构体
+struct ListNode {
+	int val;
+	ListNode* next;
+	ListNode() : val(0), next(nullptr) {}
+	ListNode(int x) : val(x), next(nullptr) {}
+	ListNode(int x, ListNode* next) : val(x), next(next) {}
+
+};
 
 class Solution {
 public:
@@ -451,9 +460,35 @@ public:
 		}
 		return count;
 	}
+	//9.22
+	vector<ListNode*> splitListToParts(ListNode* head, int k) {
+		int n = 0;
+		ListNode* temp = head;
+		while (temp != nullptr)//通过用temp指向head，不影响head的情况下遍历链表计数
+		{
+			n++;
+			temp = temp->next;
+		}
+		
+		int z = n / k;//每组中元素的个数
+		int y = n % k;//除不尽的元素个数要在前几组中来分配，也就是+1
+		vector<ListNode*>ans(k, nullptr);//储存答案的vector，因为链表的特点，只用储存分离后的各个头节点即可
+		ListNode* cur = head;
+		for (int i = 0; i < k && cur != nullptr; i++) {//根据有多少组进行循环
+			ans[i] = cur;//将头节点存入vector
+			int partSize = z + (i < y ? 1 : 0);//判断是不是要余元素
+			for (int j = 1; j < partSize; j++) {
+				cur = cur->next;//遍历到要分离的地方
+			}
+			//分离节点
+			ListNode* a = cur->next;
+			cur->next = nullptr;
+			cur = a;
+		}
+		return ans;
+	}
 };
 
 int main() {
-	vector<int> test = { 1,3,5,4,7 };
-	Solution::findNumberOfLIS(test);
+
 }
