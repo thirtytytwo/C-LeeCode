@@ -23,6 +23,14 @@ struct ListNode {
 
 };
 
+class Node {
+public:
+	int val;
+	Node* prev;
+	Node* next;
+	Node* child;
+};
+
 class Solution {
 public:
 	static int search(vector<int>& nums, int target) {
@@ -486,6 +494,43 @@ public:
 			cur = a;
 		}
 		return ans;
+	}
+	//9.24
+	Node* DFS(Node* node) {
+		Node *cur = node;
+		Node* lastPtr = nullptr;//用于指明当前的位置
+		while (cur) {
+			Node* _next = cur->next;//储存cur的下一个节点，用于合并孩子节点的尾节点
+			if (cur->child != nullptr) {
+				Node* last_Child = DFS(cur->child);
+
+				//链接孩子节点头部
+				_next = cur->next;
+				cur->next = cur->child;
+				cur->child->prev = cur;
+
+				if (_next) {//如果next不为空，则合并孩子节点的尾节点
+					last_Child->next = _next;
+					_next->prev = last_Child;
+				}
+				//将这个已经搜索过的孩子地址设空，避免重复搜索
+				cur->child = nullptr;
+				//更新最尾的位置
+				lastPtr = last_Child;
+			}
+			else {
+				//如果没有孩子节点则一直更新最尾位置
+				lastPtr = cur;
+			}
+			//更新当前链表位置
+			cur = _next;
+		}
+		return lastPtr;//这个返回其实是没有必要的，因为整个深度算法运行完，链表已经排好了
+
+	}
+	Node* flatten(Node* head) {
+		DFS(head);
+		return head;
 	}
 };
 
