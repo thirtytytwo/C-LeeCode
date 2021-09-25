@@ -468,7 +468,7 @@ public:
 		}
 		return count;
 	}
-	//9.22
+	//9.22 leecode725
 	vector<ListNode*> splitListToParts(ListNode* head, int k) {
 		int n = 0;
 		ListNode* temp = head;
@@ -495,7 +495,8 @@ public:
 		}
 		return ans;
 	}
-	//9.24
+	//9.23 leecode326 太容易，没有上传的必要
+	//9.24 leecode430
 	Node* DFS(Node* node) {
 		Node *cur = node;
 		Node* lastPtr = nullptr;//用于指明当前的位置
@@ -531,6 +532,38 @@ public:
 	Node* flatten(Node* head) {
 		DFS(head);
 		return head;
+	}
+	//9.26 leecode583
+	int minDistance(string word1, string word2) {
+		//获取两个string的大小
+		int n = word1.size();
+		int m = word2.size();
+
+		//dp数组，加一是为了在nm处也要做计算，防止溢出
+		vector<vector<int>> dp(n + 1, vector<int>(m + 1));
+		//初始化两个数组，根据题意，假设每个字符都不想等，都要删除的情况
+		for (int i = 1; i <= n; ++i) {
+			dp[i][0] = i;
+		}
+		for (int j = 1; j <= m; ++j) {
+			dp[0][j] = j;
+		}
+		//遍历数组
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= m; j++) {
+				char c = word1[i-1];
+				char d = word2[j-1];
+
+				if (c == d) {//如果字符相等，则不用删除任何字符，所以结果就等于上一个的结果
+					dp[i][j] = dp[i - 1][j - 1];
+				}
+				else {//如果不相等，那么要不就是word1删除一个要不就是word2删除一个，根据题意选最小的结果
+					dp[i][j] = ((dp[i][j - 1] < dp[i - 1][j]) ? dp[i][j - 1] : dp[i - 1][j]) + 1;
+				}
+			}
+		}
+		//返回最后一处的结果，就是答案
+		return dp[n][m];
 	}
 };
 
