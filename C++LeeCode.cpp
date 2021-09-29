@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <math.h>
+#include<cmath>
 
 using namespace std;
 
@@ -21,6 +22,16 @@ struct ListNode {
 	ListNode(int x) : val(x), next(nullptr) {}
 	ListNode(int x, ListNode* next) : val(x), next(next) {}
 
+};
+
+struct TreeNode {
+	int val;
+	TreeNode* left;
+	TreeNode* right;
+	TreeNode() : val(0), left(nullptr), right(nullptr) {}
+	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+	TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
+	
 };
 
 class Node {
@@ -608,6 +619,64 @@ public:
 		return dp[s.size()];
 		//对于同样是计算前i个字符的次数加上第i个字符配合，有些时候时dpi-1，有些时候时dpi，首先，对于dpi的理解，就是第i个数之前的所有结果的次数，是上一个循环中计算出的dpi+1
 		//那么在dpi的使用场景中，都是当单独把i个字符编译，是只考虑这个字符的情况，那么如果要组合，就不能用dpi，因为dpi包括了这个字符，得用dpi-1
+	}
+	// 9.28 leecode437
+	//深度搜索，递归方法
+	int DfsSum(TreeNode* root, int targetSum) {
+		if (!root) {
+			return 0;//如果当前节点是空，就返回零
+		}
+		
+		int ans = 0;
+
+		if (root->val == targetSum) {
+			ans++;//如果当前的节点等于剩余的targetsum，则证明这条路径成立，路径数加一
+		}
+		//DFS左右子节点寻找路径
+		ans += DfsSum(root->left, targetSum - root->val);
+		ans += DfsSum(root->right, targetSum - root->val);
+
+		return ans;
+	}
+	int pathSum(TreeNode* root, int targetSum) {
+		if (!root) {
+			return 0;//如果当前节点是空，就返回零，及这里不可能有路径
+		}
+
+		int ans = DfsSum(root, targetSum);//当前这个节点存在的路径树
+
+		//DFS左右节点，以左右节点为root再调用DFSSum
+		ans += pathSum(root->left, targetSum);
+		ans += pathSum(root->right, targetSum);
+
+		//返回所有节点的路径数
+		return ans;
+	}
+	//9.29 leecode517
+	//贪心算法
+	int findMinMoves(vector<int>& machines) {
+		//定义三个int，分别是，衣服总数，最小分配次数，还有前i个洗衣机衣服总数（局部总数）
+		int sum = 0;
+		int ans = 0;
+		int localSum = 0;
+
+		//遍历一边数组，求衣服总数
+		for (int i = 0; i < machines.size(); i++) {
+			sum += machines[i];
+		}
+		//如果衣服总数和洗衣机数不能除尽，则表示会有剩余，不能平均分配完全
+		if (sum % machines.size() !=0) {
+			return -1;
+		}
+		//衣服平均数
+		int avg = sum / machines.size();
+
+		for (int i = 0; i < machines.size(); i++) {
+			localSum += machines[i];
+			//比较出最大的结果，因为这三个结果都是对于各个情况最小的，所以比较最大的这样既满足另外两个的分配次数，又能保证结果是所有都通过后的最小值
+			ans = max(ans, max(machines[i] - avg, abs(localSum - avg * (i + 1))));
+		}
+		return ans;
 	}
 };
 
