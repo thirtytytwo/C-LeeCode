@@ -8,7 +8,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <math.h>
-#include<cmath>
+#include <cmath>
+#include <string>
 
 using namespace std;
 
@@ -706,7 +707,48 @@ public:
 		reverse(s.begin(), s.end());
 		return s;
 	}
+	//10.3 leecode166
+	static string fractionToDecimal(int numerator, int denominator) {
+		long long num = numerator, den = denominator;//用longlong防止int范围溢出
+		string ans;
+		long long test = num * den;
+		if (test == 0) {
+			return "0";//证明有一个树是0，返回0即可
+		}
+		if (test < 0) {
+			ans += "-";//证明为负数，那么则要在答案前面加负号
+		}
+		//把两个数变为绝对值进行计算
+		num = abs(num);
+		den = abs(den);
+		//计算整数部分
+		long long pre = num / den;
+		ans += std::to_string(pre);
+		//如果计算完整数部分刚好等于0，那么就是证明能整除直接返回就行
+		if (num % den == 0) {
+			return ans;
+		}
+		//加上小数点
+		ans += ".";
+		//将整数部分用到的数减去
+		num = num - (num / den) * den;
+
+		int index = ans.size();
+		unordered_map <int, int>pos;//哈希表，用于存储数出现的位置，key是数值，value是该数在ans中出现的位置
+		while (num && (pos.find(num) == pos.end())) {//如果找不到，而且num没被除尽
+			pos[num] = index++;//先将num出现的位置作为value保存在哈希表中，然后再将位置加1
+			num *= 10;//补位，让下一位除为整数
+			ans += char('0' + num / den);//asc表，加上零之后进行转码成char类型
+			num = num - (num / den) * den;//减去计算完的部分
+		}
+		if (num != 0) {//如果哈希表找到了值，而且num还没被除尽的情况下，加括号
+			int lastPos = pos[num];
+			ans = ans.substr(0, lastPos)/*从0到第一次出现重复的位置*/ + '(' + ans.substr(lastPos)/*从第一次重复的位置一直到末尾*/ + ')';
+		}
+		return ans; 
+	}
 };
 
 int main() {
+	cout << Solution::fractionToDecimal(4, 333) << endl;
 }
