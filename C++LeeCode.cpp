@@ -747,6 +747,56 @@ public:
 		}
 		return ans; 
 	}
+	//10.4
+	string licenseKeyFormatting(string s, int k) {
+		// 1. 先提取密钥
+		string key;
+		// 遍历密钥字符串，将破折号除去
+		for (char c : s) {
+			if (c != '-') {
+				key += c;
+			}
+		}
+
+		// 2. 转化为大写字母，注意这里遍历时要加 & 符号，表示引用，可以直接修改。若不加则没有修改
+		for (char& c : key) {
+			if (c <= 'z' && c >= 'a') {
+				c = c - 'a' + 'A';
+			}
+		}
+
+		// 3. 分组
+		// 结果字符串
+		string ret;
+		int n = key.size();
+		// 除第一组外，其余各组均为 k 个字符
+		int group = n / k;
+		if (n % k == 0) {
+			// 共 group 组，每组 k 个
+			for (int i = 0; i < group; ++i) {
+				// 第 i 组字符为 [i * k, (i + 1) * k)
+				ret += key.substr(i * k, k);
+				// 除最后一组外，均加上破折号
+				if (i < group - 1) ret += '-';
+			}
+		}
+		else {
+			// 共 group + 1 组，第一组 n % k 个，其余组 k 个
+			ret += key.substr(0, n % k);
+			if (group > 0) {
+				// 还有其余组
+				// 先加一个破折号
+				ret += '-';
+				for (int i = 0; i < group; ++i) {
+					// 第 i 组字符为 [i * k + n % k, (i + 1) * k + n % k)
+					ret += key.substr(i * k + n % k, k);
+					// 除最后一组外，均加上破折号
+					if (i < group - 1) ret += '-';
+				}
+			}
+		}
+		return ret;
+	}
 };
 
 int main() {
