@@ -43,6 +43,22 @@ public:
 	Node* child;
 };
 
+//10.5
+class Iterator {
+	struct Data;
+	Data* data;
+public:
+	Iterator(const vector<int>& nums);
+	Iterator(const Iterator& iter);
+	
+		// Returns the next element in the iteration.
+		int next();
+	
+		// Returns true if the iteration has more elements.
+		bool hasNext() const;
+	
+};
+
 class Solution {
 public:
 	static int search(vector<int>& nums, int target) {
@@ -796,6 +812,36 @@ public:
 			}
 		}
 		return ret;
+	}
+};
+
+//10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
+class PeekingIterator : public Iterator {
+private:
+	bool Flag;
+	int nextValue;
+public:
+	PeekingIterator(const vector<int>& nums) : Iterator(nums) {
+		Flag = Iterator::hasNext();
+		if (Flag) {
+			nextValue = Iterator::next();
+		}
+	}
+
+	int peek() {
+		return nextValue;
+	}
+
+	int next() {
+		int ret = nextValue;
+		Flag = Iterator::hasNext();
+		if (Flag) {
+			nextValue = Iterator::next();
+		}
+	}
+
+	bool hasNext() const {
+		return Flag;
 	}
 };
 
