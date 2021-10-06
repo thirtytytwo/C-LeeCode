@@ -10,6 +10,7 @@
 #include <math.h>
 #include <cmath>
 #include <string>
+#include <set>
 
 using namespace std;
 
@@ -812,6 +813,20 @@ public:
 			}
 		}
 		return ret;
+	}
+	//10.6
+	int thirdMax(vector<int>& nums) {
+		set<int> ans;//set和Map差不多，只不过他的key就是value，而且不能改，并且set默认less排序
+		for (int i = 0; i < nums.size(); ++i) {
+			ans.insert(nums[i]);
+			if (ans.size() > 3) {
+				ans.erase(ans.begin());//删除最小的数
+			}
+		}
+		if (ans.size() == 3) {
+			return *ans.begin();//等于三返回最小的，也就是第三个大的
+		}
+		return *ans.rbegin();//小于3，这样就返回最大的，rbegin和begin的差别就是前者是返回反转后的第一个，后者是返回第一个
 	}
 };
 
