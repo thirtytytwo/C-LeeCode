@@ -814,7 +814,7 @@ public:
 		}
 		return ret;
 	}
-	//10.6
+	//10.6 lecode414
 	int thirdMax(vector<int>& nums) {
 		set<int> ans;//set和Map差不多，只不过他的key就是value，而且不能改，并且set默认less排序
 		for (int i = 0; i < nums.size(); ++i) {
@@ -827,6 +827,16 @@ public:
 			return *ans.begin();//等于三返回最小的，也就是第三个大的
 		}
 		return *ans.rbegin();//小于3，这样就返回最大的，rbegin和begin的差别就是前者是返回反转后的第一个，后者是返回第一个
+	}
+	//10.7 leecode434 简单说一下，简单的遍历模拟， 只不过我之前找错了应该让计数器加一的点，其实不是应该是空格，而是空格后面的字符，i==0是边界情况
+	int countSegments(string s) {
+		int ret = 0;
+		for (int i = 0; i < s.size(); ++i) {
+			if (s[i] != ' ' && (i == 0 || s[i - 1] == ' ')) {
+				ret++;
+			}
+		}
+		return ret;
 	}
 };
 
