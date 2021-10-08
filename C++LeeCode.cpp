@@ -838,6 +838,19 @@ public:
 		}
 		return ret;
 	}
+	//10.8 leecode187
+	vector<string> findRepeatedDnaSequences(string s) {
+		vector<string> ans;
+		unordered_map<string, int> map;
+		int n = s.size();//因s.size()的类型是unsigned，比范围比int小，如果下次做题遇到遍历越界，可能就是这个问题
+		for (int i = 0; i <= s.size() - 10; ++i) {
+			string _s = s.substr(i,10);
+			if (++map[_s] == 2) {
+				ans.push_back(_s);
+			}
+		}
+		return ans;
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
@@ -871,5 +884,6 @@ public:
 };
 
 int main() {
-	cout << Solution::fractionToDecimal(4, 333) << endl;
+	string str = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT";
+	Solution::findRepeatedDnaSequences(str);
 }
