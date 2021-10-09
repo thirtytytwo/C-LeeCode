@@ -882,8 +882,68 @@ public:
 		return Flag;
 	}
 };
+//10.9 leecode352
+class SummaryRanges {
+public:
+	unordered_set<int> _set;//集合用来存储val出现的次数
+	vector<vector<int>> _ret;
+
+	SummaryRanges() {
+	}
+
+	//二分查找，用来搜寻值val + 1或者val - 1的下标位置
+	int binarySearch(int Target,int Rightorleft) {
+		int right = _ret.size() - 1;
+		int left = 0;
+		int ans;
+		while (left <= right) {
+			int mid = (left + right) / 2;
+			if (_ret[mid][Rightorleft] > Target) {
+				right = mid - 1;
+			}
+			else if (_ret[mid][Rightorleft] == Target) {
+				ans = mid;
+				return ans;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		return ans;
+	}
+	void addNum(int val) {
+		if (_set.count(val)) {//如果存在了，就不用重复计算了
+			return;
+		}
+		_set.insert(val);//记录val的出现
+		if (_set.count(val - 1) && _set.count(val + 1)) {//如果两个边界都出现，就合并两个区间
+			int left = binarySearch(val - 1, 1);
+			int right = binarySearch(val + 1, 0);
+
+			_ret[left][1] = _ret[right][1];
+			_ret.erase(_ret.begin() + right);//清除，从begin位置迭代器移动right次，也就是清楚right位置
+		}
+		else if (_set.count(val - 1)) {//如果只出现左半边，就合并左区间，并且把左区间的右边界设成val
+			int ans = binarySearch(val - 1, 1);
+			_ret[ans][1] = val;
+		}
+		else if (_set.count(val + 1)) {//同上理
+			int ans = binarySearch(val + 1, 0);
+			_ret[ans][0] = val;
+		}
+		else {
+			//如果没有就自己立一个区间
+			_ret.push_back(vector<int>{val, val});
+		}
+		//题目要求，从小到大排序
+		sort(_ret.begin(), _ret.end());
+	}
+
+	vector<vector<int>> getIntervals() {
+		return _ret;
+	}
+};
 
 int main() {
-	string str = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT";
-	Solution::findRepeatedDnaSequences(str);
+
 }
