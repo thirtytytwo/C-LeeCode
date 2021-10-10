@@ -851,6 +851,22 @@ public:
 		}
 		return ans;
 	}
+	//10.10 leecode441
+	static int arrangeCoins(int n) {
+		long long l = 1, r = n;
+		while (l < r)
+		{
+			long long mid = (l + r + 1) / 2;//加一是因为编程中除法是取整除的部分，这题中只取整数部分会有死循环，所以加一让他取偏大的结果
+			long long sum = (1 + mid) * mid / 2;
+			if (sum <= n) {
+				l = mid;
+			}
+			else {
+				r = mid - 1;
+			}
+		}
+		return l;
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
@@ -881,6 +897,7 @@ public:
 	bool hasNext() const {
 		return Flag;
 	}
+
 };
 //10.9 leecode352
 class SummaryRanges {
@@ -945,5 +962,5 @@ public:
 };
 
 int main() {
-
+	Solution::arrangeCoins(5);
 }
