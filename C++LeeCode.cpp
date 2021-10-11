@@ -867,6 +867,55 @@ public:
 		}
 		return l;
 	}
+	//10.11
+	//leecode273
+		//用来存储对应的英文单词
+	vector<string> singles = { "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
+	vector<string> teens = { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
+	vector<string> tens = { "", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+	vector<string> thousands = { "", "Thousand", "Million", "Billion" };
+
+	string numberToWords(int num) {
+		string sb;
+		if (num == 0) {
+			return "Zero";
+		}
+		//根据英文每三位标逗号知道是每三位算一次，题意的范围最大则是1000000000，所以只有三次循环，为此减去3个0
+		for (int i = 3, uint = 1000000000; i >= 0; i--, uint /= 1000) {
+			int cur = num / uint;
+			if (cur != 0) {
+				num -= cur * uint;
+				string curr;
+				recursion(curr, cur);//确定这三位数中具体对应的英文
+				curr = curr + thousands[i] + " ";//再加上现在算好的千位和空格
+				sb += curr;
+			}
+		}
+		while (sb.back() == ' ') {
+			sb.pop_back();//如果最后一个是空格，根据题意，需要删除
+		}
+		return sb;
+	}
+	void recursion(string& curr, int curNum) {
+		if (curNum == 0) {
+			return;
+		}
+		else if (curNum < 10) {
+			curr += singles[curNum] + " ";//个位数上的计算
+		}
+		else if (curNum < 20) {
+			curNum %= 10;
+			curr += teens[curNum] + " ";//10~20的teens计算
+		}
+		else if (curNum < 100) {
+			curr += tens[curNum / 10] + " ";
+			recursion(curr, curNum % 10);//20以上的十位计算，再递归计算个位
+		}
+		else {
+			curr += singles[curNum / 100] + " Hundred ";
+			recursion(curr, curNum % 100);//前几个都不符合则表示是百位，所以百位的计算，在递归计算十位和各位
+		}
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
