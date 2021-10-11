@@ -916,6 +916,29 @@ public:
 			recursion(curr, curNum % 100);//前几个都不符合则表示是百位，所以百位的计算，在递归计算十位和各位
 		}
 	}
+	//leecode217
+	bool containsDuplicate(vector<int>& nums) {
+		unordered_set<int> _set;
+		for (int i = 0; i < nums.size(); ++i) {
+			if (_set.count(nums[i])) {
+				return true;
+			}
+			_set.insert(nums[i]);
+		}
+		return false;
+	}
+	//leecode053
+	int maxSubArray(vector<int>& nums) {
+		int n = nums.size();
+		vector<int> dp(n);
+		dp[0] = nums[0];
+		int ans = dp[0];
+		for (int i = 1; i < n; ++i) {
+			dp[i] = max(nums[i], dp[i - 1] + nums[i]);
+			ans = max(ans, dp[i]);
+		}
+		return ans;
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
