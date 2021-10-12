@@ -939,6 +939,69 @@ public:
 		}
 		return ans;
 	}
+	//10.12
+	//leecode029 没理解，只知道大概意思，找时间再看看
+	int divide(int dividend, int divisor) {
+		if (dividend == 0) return 0;
+		if (divisor == 1) return dividend;
+		if (divisor == -1) {
+			if (dividend > INT_MIN) return -dividend;// 只要不是最小的那个整数，都是直接返回相反数就好啦
+			return INT_MAX;// 是最小的那个，那就返回最大的整数啦
+		}
+		long a = dividend;
+		long b = divisor;
+		int sign = 1;
+		if ((a > 0 && b < 0) || (a < 0 && b>0)) {
+			sign = -1;
+		}
+		a = a > 0 ? a : -a;
+		b = b > 0 ? b : -b;
+		long res = div(a, b);
+		if (sign > 0)return res > INT_MAX ? INT_MAX : res;//根据题意，溢出就采用最大值
+		return -res;
+	}
+	int div(long a, long b) {
+		if (a < b) return 0;
+		long count = 1;
+		long tb = b; // 在后面的代码中不更新b
+		while ((tb + tb) <= a) {
+			count = count + count; // 最小解翻倍
+			tb = tb + tb; // 当前测试的值也翻倍
+		}
+		return count + div(a - tb, b);
+	}
+	//leecode 001
+	vector<int> twoSum(vector<int>& nums, int target) {
+		int n = nums.size();
+		vector<int> ans;
+		for (int i = 0; i < n - 1; ++i) {
+			for (int j = i + 1; j < n; ++j) {
+				if (nums[i] + nums[j] == target) {
+					ans.push_back(i);
+					ans.push_back(j);
+				}
+			}
+		}
+		return ans;
+	}
+	//leecode088
+	static void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+		for (int i = 0; i != n; ++i) {
+			nums1[m + i] = nums2[i];
+		}
+		sort(nums1.begin(), nums1.end());
+	}
+	//leecode070
+	int climbStairs(int n) {
+		vector<int> dp(n + 3);
+		dp[0] = 0;
+		dp[1] = 1;
+		dp[2] = 2;
+		for (int i = 3; i <= n; ++i) {
+			dp[i] = dp[i - 1] + dp[i - 2];
+		}
+		return dp[n];
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
@@ -1034,5 +1097,7 @@ public:
 };
 
 int main() {
-	Solution::arrangeCoins(5);
+	vector<int>test1 = { 1, 2, 3, 0, 0, 0 };
+	vector<int>test2 = { 2,5,6 };
+	Solution::merge(test1, 3, test2, 3);
 }
