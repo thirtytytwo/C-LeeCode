@@ -1002,6 +1002,16 @@ public:
 		}
 		return dp[n];
 	}
+	//leecode746
+	int minCostClimbingStairs(vector<int>& cost) {
+		int n = cost.size();
+		vector<int> dp(n + 1);
+		dp[0] = dp[1] = 0;
+		for (int i = 2; i <= n; ++i) {
+			dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2]);
+		}
+		return dp[n];
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
@@ -1097,7 +1107,6 @@ public:
 };
 
 int main() {
-	vector<int>test1 = { 1, 2, 3, 0, 0, 0 };
-	vector<int>test2 = { 2,5,6 };
-	Solution::merge(test1, 3, test2, 3);
+	vector<int> test = { 10,15,20 };
+	Solution::minCostClimbingStairs(test);
 }
