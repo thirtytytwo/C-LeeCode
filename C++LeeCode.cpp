@@ -1090,7 +1090,7 @@ public:
 		}
 		return second;
 	}
-	int rob(vector<int>& nums) {
+	int Rob(vector<int>& nums){
 		int n = nums.size();
 		if (n == 1) {
 			return nums[0];
@@ -1122,6 +1122,79 @@ public:
 			first = temp;
 		}
 		return second;
+	}
+	//10.14
+	//
+	static int peakIndexInMountainArray(vector<int>& arr) {
+		int l = 0, r = arr.size() - 1;
+		while (l < r) {
+			int mid = (l + r + 1) / 2;
+			if (arr[mid] > arr[mid - 1]) {
+				l = mid;
+			}
+			else {
+				r = mid - 1;
+			}
+		}
+		return l;
+	}
+	//
+	vector<vector<int>> generate(int numRows) {
+		vector<vector<int>> ans(numRows);
+		for (int i = 0; i < numRows; ++i) {
+			ans[i].resize(i + 1);
+			ans[i][0] = ans[i][i] = 1;
+			for (int j = 1; j < i; ++j) {
+				ans[i][j] = ans[i - 1][j - 1] + ans[i - 1][j];
+			}
+		}
+		return ans;
+	}
+	//   a不动矩阵
+	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {
+		int m = nums.size();
+		int n = nums[0].size();
+		if (m * n != r * c) return nums;
+
+		vector<vector<int>> ans(r, vector<int>(c));
+		for (int i = 0; i < m * n; i++) {
+			ans[i / c][i % c] = nums[i / n][i % n];
+		}
+		return ans;
+	}
+	//leecode055
+	bool canJump(vector<int>& nums) {
+		int n = nums.size();
+		int a = nums[0];
+		int b = 0;
+		for (int i = 1; i < n; ++i) {
+			if (a == 0) {
+				return false;
+			}
+			b = max(a - 1, nums[i]);
+			a = b;
+		}
+		return true;
+	}
+	//leecode045 a不动，晚上再看
+	int jump(vector<int>& nums)
+	{
+		int ans = 0;
+		int start = 0;
+		int end = 1;
+		while (end < nums.size())
+		{
+			int maxPos = 0;
+			for (int i = start; i < end; i++)
+			{
+				// 能跳到最远的距离
+				maxPos = max(maxPos, i + nums[i]);
+			}
+			start = end;      // 下一次起跳点范围开始的格子
+			end = maxPos + 1; // 下一次起跳点范围结束的格子
+			ans++;            // 跳跃次数
+		}
+		return ans;
 	}
 };
 
@@ -1218,5 +1291,6 @@ public:
 };
 
 int main() {
-
+	vector<int> test = { 0,1,0 };
+	Solution::peakIndexInMountainArray(test);
 }
