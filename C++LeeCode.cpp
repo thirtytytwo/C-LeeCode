@@ -1012,6 +1012,117 @@ public:
 		}
 		return dp[n];
 	}
+	//10.13
+	//leecode412
+	vector<string> fizzBuzz(int n) {
+		vector<string> answer;
+		for (int i = 1; i <= n; i++) {
+			string curr;
+			if (i % 3 == 0) {
+				curr += "Fizz";
+			}
+			if (i % 5 == 0) {
+				curr += "Buzz";
+			}
+			if (curr.size() == 0) {
+				curr += to_string(i);
+			}
+			answer.emplace_back(curr);
+		}
+		return answer;
+	}
+	//leecode350
+	vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+		if (nums1.size() > nums2.size()) {
+			return intersect(nums2, nums1);
+		}
+		unordered_map <int, int> m;
+		for (int num : nums1) {
+			++m[num];
+		}
+		vector<int> intersection;
+		for (int num : nums2) {
+			if (m.count(num)) {
+				intersection.push_back(num);
+				--m[num];
+				if (m[num] == 0) {
+					m.erase(num);
+				}
+			}
+		}
+		return intersection;
+	}
+	//leecode121
+	int maxProfit(vector<int>& prices) {
+		int inf = 1e9;
+		int minprice = inf, maxprofit = 0;
+		for (int price : prices) {
+			maxprofit = max(maxprofit, price - minprice);
+			minprice = min(price, minprice);
+		}
+		return maxprofit;
+	}
+	//leecode198
+	int rob(vector<int>& nums) {
+		if (nums.empty()) {
+			return 0;
+		}
+		int n = nums.size();
+		if (n == 1) {
+			return nums[0];
+		}
+		vector<int> dp(n, 0);
+		dp[0] = nums[0];
+		dp[1] = max(dp[0], nums[1]);
+		for (int i = 2; i < n; ++i) {
+			dp[i] = max(dp[i - 2] + nums[i], dp[i - 1]);
+		}
+		return dp[n - 1];
+	}
+	//leecode213
+	int robRange(vector<int>& nums, int start, int end) {
+		int first = nums[start];
+		int second = max(nums[start], nums[start + 1]);
+		for (int i = start + 2; i <= end; ++i) {
+			int temp = second;
+			second = max(first + nums[i], second);
+			first = temp;
+		}
+		return second;
+	}
+	int rob(vector<int>& nums) {
+		int n = nums.size();
+		if (n == 1) {
+			return nums[0];
+		}
+		if (n == 2) {
+			return max(nums[0], nums[1]);
+		}
+		return max(robRange(nums, 0, n - 2), robRange(nums, 1, n - 1));
+	}
+	//leecode740
+	int deleteAndEarn(vector<int>& nums) {
+		int n = nums.size();
+		int _max = 0;
+		if (n == 1) {
+			return nums[0];
+		}
+		for (int i = 0; i < n; ++i) {
+			_max = max(_max, nums[i]);
+		}
+		vector<int> temps(_max + 1);
+		for (int temp : nums) {
+			++temps[temp];
+		}
+		int first = temps[0];
+		int second = max(temps[0], temps[1]);
+		for (int i = 2; i <= _max; ++i) {
+			int temp = second;
+			second = max(first + temps[i] * i, second);
+			first = temp;
+		}
+		return second;
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
@@ -1107,6 +1218,5 @@ public:
 };
 
 int main() {
-	vector<int> test = { 10,15,20 };
-	Solution::minCostClimbingStairs(test);
+
 }
