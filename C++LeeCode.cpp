@@ -1150,7 +1150,7 @@ public:
 		}
 		return ans;
 	}
-	//   a不动矩阵
+	//leecode556  a不动矩阵
 	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {
 		int m = nums.size();
 		int n = nums[0].size();
@@ -1163,6 +1163,7 @@ public:
 		return ans;
 	}
 	//leecode055
+	//每次都跳最大距离，完整循环完就是跳完了，途中a变0了就是跳不动了
 	bool canJump(vector<int>& nums) {
 		int n = nums.size();
 		int a = nums[0];
@@ -1176,12 +1177,14 @@ public:
 		}
 		return true;
 	}
-	//leecode045 a不动，晚上再看
+	//leecode045 
+	//一次跳跃，在能跳的最远的范围内，所有的尝试都可以视为第二次跳跃，所以用for循环来迭代找到所有的第二次
+	//跳跃中能够跳的最远的
 	int jump(vector<int>& nums)
 	{
 		int ans = 0;
 		int start = 0;
-		int end = 1;
+		int end = 1;//一次跳跃的最远范围
 		while (end < nums.size())
 		{
 			int maxPos = 0;
@@ -1195,6 +1198,60 @@ public:
 			ans++;            // 跳跃次数
 		}
 		return ans;
+	}
+	//10.15
+	//leecode038
+	string countAndSay(int n) {
+		string prev = "1";
+		for (int i = 2; i <= n; ++i) {
+			string cur = "";
+			int start = 0;
+			int curPos = 0;
+			while (curPos < prev.size()) {
+				while (curPos < prev.size() && prev[curPos] == prev[start]) {
+					curPos++;
+				}
+				cur += to_string(curPos - start) + prev[start];
+				start = curPos;
+			}
+			prev = cur;
+		}
+		return prev;
+	}
+	//leecode 918
+	int maxSubarraySumCircular(vector<int>& nums) {
+		int sum = nums[0];
+		vector<int>dpmax(nums);
+		vector<int>dpmin(nums);
+		for (int i = 1; i < nums.size(); i++) {
+			dpmax[i] = max(dpmax[i - 1] + nums[i], nums[i]);
+			dpmin[i] = min(dpmin[i - 1] + nums[i], nums[i]);
+			sum += nums[i];
+		}
+		int maxv = *max_element(dpmax.begin(), dpmax.end());
+		int minv = *min_element(dpmin.begin(), dpmin.end());
+		return max(maxv, sum - minv == 0 ? maxv : sum - minv);
+	}
+	//10.16
+	//leecode230
+	int kthSmallest(TreeNode* root, int k) {
+		stack<TreeNode*>_stack;
+		while (!_stack.empty() || root != nullptr) {
+			if (root != nullptr) {
+				_stack.push(root);
+				root = root->left;
+			}
+			else {
+				root = _stack.top();
+				_stack.pop();
+				--k;
+				if (k == 0) {
+					break;
+				}
+				root = root->right;
+			}
+		}
+		return root->val;
 	}
 };
 
