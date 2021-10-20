@@ -1253,6 +1253,68 @@ public:
 		}
 		return root->val;
 	}
+	//10.19
+	//
+	//一是自写的方法，二是题解，因为题中会有负数给出，所以，如果是一中一直向下运算的话，其实并不是最优子结构
+	//因为题中有负数，存在负负得正大过之前数的情况，所以在比较最大的同时，我们还需要维护一个最小值，并且进行三者比较
+	int maxProduct(vector<int>& nums) {
+		int n = nums.size();
+		vector<int> dp(n);
+		dp[0] = 0;
+		dp[1] = nums[0];
+		for (int i = 2; i <= n; ++i) {
+			dp[i] = max(dp[i - 1] * nums[i - 1], nums[i - 1]);
+		}
+		return dp[n];
+	}
+	int MaxProduct(vector<int>& nums) {
+		vector <int> maxF(nums), minF(nums);
+		for (int i = 1; i < nums.size(); ++i) {
+			maxF[i] = max(maxF[i - 1] * nums[i], max(nums[i], minF[i - 1] * nums[i]));
+			minF[i] = min(minF[i - 1] * nums[i], min(nums[i], maxF[i - 1] * nums[i]));
+		}
+		return *max_element(maxF.begin(), maxF.end());//这里是迭代器迭代出最大的元素
+	}
+	//
+	static int getMaxLen(vector<int>& nums) {
+		int length = nums.size();
+		int maxlength = 0;
+		vector<int> dpZ(length + 1,0);
+		vector<int> dpF(length + 1,0);
+		if (nums[0] > 0) {
+			dpZ[0] = 1;
+		}
+		else if (nums[0] < 0) {
+			dpF[0] = 1;
+		}
+		maxlength = dpZ[0];
+		for (int i = 1; i < length; ++i) {
+			if (nums[i] > 0) {
+				dpZ[i] = dpZ[i - 1] + 1;
+				dpF[i] = (dpF[i - 1] > 0) ? dpF[i - 1] + 1 : 0;
+			}
+			else if (nums[i] < 0) {
+				dpF[i] = dpZ[i - 1] + 1;
+				dpZ[i] = (dpF[i - 1] > 0) ? dpF[i - 1] + 1 : 0;
+			}
+			else {
+				dpZ[i] = 0;
+				dpF[i] = 0;
+			}
+			maxlength = max(maxlength, dpZ[i]);
+		}
+		return maxlength;
+	}
+	//10.20
+	//赶项目水一天
+	int minMoves(vector<int>& nums) {
+		int minNum = *min_element(nums.begin(), nums.end());
+		int res = 0;
+		for (int num : nums) {
+			res += num - minNum;
+		}
+		return res;
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
@@ -1346,8 +1408,67 @@ public:
 		return _ret;
 	}
 };
+//10.19
+//
+struct TrieNode {
+	vector<TrieNode*> child;
+	bool isEnd;
+	TrieNode() {
+		this->child = vector<TrieNode*>(26, nullptr);
+		this->isEnd = false;
+	}
+public:
+	void insert(TrieNode *root,const string& str) {
+		TrieNode *node = root;
+		for (auto& c : str) {
+			if (node->child[c - 'a'] == nullptr) {
+				node->child[c - 'a'] = new TrieNode();
+			}
+			node = node->child[c - 'a'];
+		}
+		node->isEnd = true;
+	}
+};
+
+class WordDictionary {
+private:
+	TrieNode* trie;
+public:
+	WordDictionary() {
+		trie = new TrieNode();
+	}
+
+	void addWord(string word) {
+		trie->insert(trie, word);
+	}
+
+	bool search(string word) {
+		return dfs(trie, 0, word);
+	}
+	bool dfs(TrieNode* cur, int index, const string& word) {
+		if (index == word.size()) {
+			return cur->isEnd;
+		}
+		char c = word[index];
+		if (c >= 'a' && c <= 'z') {
+			TrieNode* child = cur->child[c - 'a'];
+			if (child != nullptr && dfs(child, index + 1, word)) {
+				return true;
+			}
+		}
+		else if (c == '.') {
+			for (int i = 0; i < 26; ++i) {
+				TrieNode* child = cur->child[i];
+				if (child != nullptr && dfs(child, index + 1, word)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+};
 
 int main() {
-	vector<int> test = { 0,1,0 };
-	Solution::peakIndexInMountainArray(test);
+	vector<int> nums = { 0, 1, -2, -3, 4 };
+	Solution::getMaxLen(nums);
 }
