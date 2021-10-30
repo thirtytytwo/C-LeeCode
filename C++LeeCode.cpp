@@ -15,6 +15,7 @@
 using namespace std;
 
 typedef pair<int, float> _p;//pair将一对值组合成一个值，这一对值可以具有不同的数据类型（T1和T2），两个值可以分别用pair的两个公有函数first和second访问。是stl内部提供
+typedef pair<int, int> _Pos;
 
 //9.22所用结构体
 struct ListNode {
@@ -1315,6 +1316,86 @@ public:
 		}
 		return res;
 	}
+	//10.30
+	vector<int> singleNumber(vector<int>& nums) {
+		unordered_map<int, int> _map;
+		for (int num : nums) {
+			_map[num]++;
+		}
+		vector<int> ans;
+		for (const auto &item : _map) {
+			if (item.second == 1) {
+				ans.push_back(item.first);
+			}
+		}
+		return ans;
+	}
+};
+class DP {
+public:
+	//传统动规思路，超时
+	int maxScoreSightseeingPair(vector<int>& values) {
+		int n = values.size();
+		vector<int> dp(n + 1);
+		dp[0] = 0;
+		for (int i = 1; i <= n - 1; ++i) {
+			for (int j = i + 1; j <= n; ++j) {
+				int temp = values[i - 1] + values[j - 1];
+				int temp1 = dp[i - 1];
+				dp[i] = max(dp[i], max(dp[i - 1], (values[i - 1] + values[j - 1] + i - j)));
+			}
+		}
+		return dp[n - 1];
+	}
+	//一次遍历思路
+	int maxScoreSightseeingPair(vector<int>& values) {
+		int ans = 0, mx = values[0] + 0;
+		//对于前面的两次遍历，这个一次遍历的思路就在于，无论j怎么遍历，i都是不变的，所以两次遍历会消耗性能，只用在一次遍历操作结束后，在更新i和i的值就行
+		for (int j = 1; j < values.size(); ++j) {
+			ans = max(ans, mx + values[j] - j);
+			// 边遍历边维护
+			mx = max(mx, values[j] + j);
+		}
+		return ans;
+	}
+	//1.dp[i],第I天股票卖出去后的最大收益
+	//2.因为要求最大收益，那就是dp[i] = max(dp[i],price[i] - price[j])
+	//3.dp[0] = dp[1] = 0
+	//4.从左到右遍历i，然后在0~i的范围内遍历j
+	//超时
+	int maxProfit(vector<int>& prices) {
+		int n = prices.size();
+		vector<int> dp(n + 1);
+		dp[0] = dp[1] = 0;
+		for (int i = 2; i <= n; ++i) {
+			for (int j = 1; j < i; ++j)
+			{
+				dp[i] = max(dp[i - 1], max(dp[i], prices[i - 1] - prices[j - 1]));
+			}
+		}
+		return dp[n];
+	}
+	//发现只用维护两个变量，一个是遍历到该位置的最小买入金额，还有一个是最大的利润，所以可以只用一次遍历，然后在遍历中更新
+	int MaxProfit(vector<int>& prices) {
+		int minPrice = 1e9;
+		int maxPrice = 0;
+		for (auto price : prices) {
+			maxPrice = max(maxPrice, price - minPrice);
+			minPrice = min(minPrice, price);
+		}
+		return maxPrice;
+	}
+	//类似01背包问题
+	int MaxProfit2(vector<int>& prices) {
+		int n = prices.size();
+		vector<vector<int>> dp(n, vector<int>(2));
+		dp[0][0] = 0, dp[0][1] = -prices[0];
+		for (int i = 1; i < n; ++i) {
+			dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i]);//手中没有股票，出售的情况
+			dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i]);//手中持有股票，不出售的情况
+		}
+		return dp[n - 1][0];
+	}
 };
 
 //10.5 leecode284 没有什么好讲解的，基本上都是leecode原本封装好的函数，不过有几个疑问，第一个就是对于::和->和.的引用方法方式到底有什么差别，还有就是有点忘记接口的用法了，将这些列入明天复习计划
@@ -1469,6 +1550,4 @@ public:
 };
 
 int main() {
-	vector<int> nums = { 0, 1, -2, -3, 4 };
-	Solution::getMaxLen(nums);
 }
