@@ -1330,6 +1330,11 @@ public:
 		}
 		return ans;
 	}
+	//11.1
+	//leecode575
+	int distributeCandies(vector<int>& candyType) {
+		return min(unordered_set<int>(candyType.begin(), candyType.end()).size(), candyType.size() / 2);
+	}
 };
 class DP {
 public:
@@ -1348,7 +1353,7 @@ public:
 		return dp[n - 1];
 	}
 	//一次遍历思路
-	int maxScoreSightseeingPair(vector<int>& values) {
+	int MaxScoreSightseeingPair(vector<int>& values) {
 		int ans = 0, mx = values[0] + 0;
 		//对于前面的两次遍历，这个一次遍历的思路就在于，无论j怎么遍历，i都是不变的，所以两次遍历会消耗性能，只用在一次遍历操作结束后，在更新i和i的值就行
 		for (int j = 1; j < values.size(); ++j) {
@@ -1550,4 +1555,9 @@ public:
 };
 
 int main() {
+	set<int> test;
+	test.insert(1);
+	test.insert(1);
+	test.insert(2);
+	test.insert(3);
 }
