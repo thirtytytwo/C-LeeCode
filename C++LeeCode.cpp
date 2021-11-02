@@ -1335,6 +1335,35 @@ public:
 	int distributeCandies(vector<int>& candyType) {
 		return min(unordered_set<int>(candyType.begin(), candyType.end()).size(), candyType.size() / 2);
 	}
+	//11.2
+	//
+	void deleteNode(ListNode* node) {
+		node->val = node->next->val;
+		node->next = node->next->next;
+	}
+};
+class Datastruvture {
+public:
+	static vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+		if (nums2.size() > nums1.size()) {
+			return intersect(nums2, nums1);
+		}
+		unordered_map<int, int> a;
+		vector<int> ret;
+		for (int i = 0; i < nums1.size(); ++i) {
+			a[nums1[i]]++;
+		}
+		for (int i = 0; i < nums2.size(); ++i) {
+			if (a.count(nums2[i])) {//count函数只能返回这个key-value对存不存在，存在返回1，不存在返回0；
+				a[nums2[i]]--;
+				ret.push_back(nums2[i]);
+				if (a[nums2[i]] == 0) {
+					a.erase(nums2[i]);
+				}
+			}
+		}
+		return ret;
+	}
 };
 class DP {
 public:
@@ -1555,9 +1584,7 @@ public:
 };
 
 int main() {
-	set<int> test;
-	test.insert(1);
-	test.insert(1);
-	test.insert(2);
-	test.insert(3);
+	vector<int> test1 = { 4,9,5 };
+	vector<int> test2 = { 9,4,9,8,4 };
+	Datastruvture::intersect(test1, test2);
 }
