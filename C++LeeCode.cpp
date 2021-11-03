@@ -1583,8 +1583,70 @@ public:
 	}
 };
 
+class Offer {
+	stack<int> inStack;
+	stack<int> outStack;
+public:
+	void appendTail(int value) {
+		while (!inStack.empty()) {
+			int temp = inStack.top();
+			inStack.pop();
+			outStack.push(temp);
+		}
+		inStack.push(value);
+	}
+
+	int deleteHead() {
+		if (inStack.empty() && outStack.empty()) {
+			return -1;
+		}
+		if (outStack.size() != 0) {
+			while (outStack.size() > 1) {
+				int temp = outStack.top();
+				outStack.pop();
+				inStack.push(temp);
+			}
+			return outStack.top();
+		}
+		else {
+			return inStack.top();
+		}
+	}
+};
+class MinStack {
+	stack<int> mainStack;
+	stack<int> minStack;
+	int minPtr = INT_MAX;
+public:
+	/** initialize your data structure here. */
+	MinStack() {
+
+	}
+
+	void push(int x) {
+		if (minStack.empty() || minStack.top() > x) {
+			minStack.push(x);
+		}
+		else {// 如果数据栈中当前最小值 < x, 则继续将最小值设置为上次的最小值
+			minStack.push(minStack.top());
+		}
+		mainStack.push(x);
+	}
+
+	void pop() {
+		mainStack.pop();
+		minStack.pop();
+	}
+
+	int top() {
+		return mainStack.top();
+	}
+
+	int min() {
+		return minStack.top();
+	}
+};
 int main() {
-	vector<int> test1 = { 4,9,5 };
-	vector<int> test2 = { 9,4,9,8,4 };
-	Datastruvture::intersect(test1, test2);
+	vector<vector<int>> test = { {1,2,3},{3,4,5} };
+	cout << test.size() << endl;
 }
