@@ -26,6 +26,18 @@ struct ListNode {
 	ListNode(int x, ListNode* next) : val(x), next(next) {}
 
 };
+class Node {
+public:
+	int val;
+	Node* next;
+	Node* random;
+
+	Node(int _val) {
+		val = _val;
+		next = NULL;
+		random = NULL;
+	}
+};
 
 struct TreeNode {
 	int val;
@@ -37,12 +49,12 @@ struct TreeNode {
 	
 };
 
-class Node {
+class Node1 {
 public:
 	int val;
-	Node* prev;
-	Node* next;
-	Node* child;
+	Node1* prev;
+	Node1* next;
+	Node1* child;
 };
 
 //10.5
@@ -527,13 +539,13 @@ public:
 	}
 	//9.23 leecode326 太容易，没有上传的必要
 	//9.24 leecode430
-	Node* DFS(Node* node) {
-		Node *cur = node;
-		Node* lastPtr = nullptr;//用于指明当前的位置
+	Node1* DFS(Node1* node) {
+		Node1 *cur = node;
+		Node1* lastPtr = nullptr;//用于指明当前的位置
 		while (cur) {
-			Node* _next = cur->next;//储存cur的下一个节点，用于合并孩子节点的尾节点
+			Node1* _next = cur->next;//储存cur的下一个节点，用于合并孩子节点的尾节点
 			if (cur->child != nullptr) {
-				Node* last_Child = DFS(cur->child);
+				Node1* last_Child = DFS(cur->child);
 
 				//链接孩子节点头部
 				_next = cur->next;
@@ -559,7 +571,7 @@ public:
 		return lastPtr;//这个返回其实是没有必要的，因为整个深度算法运行完，链表已经排好了
 
 	}
-	Node* flatten(Node* head) {
+	Node1* flatten(Node1* head) {
 		DFS(head);
 		return head;
 	}
@@ -1341,6 +1353,27 @@ public:
 		node->val = node->next->val;
 		node->next = node->next->next;
 	}
+	//11.4
+	//367. 有效的完全平方数
+	static bool isPerfectSquare(int num) {
+		int l = 0;
+		int r = num;
+		while (l <= r) {
+			int mid = (l + r) / 2;
+			long sq = (long)mid * mid;
+			if (sq == num) {
+				return true;
+			}
+			else if (sq > num) {
+				r = mid - 1;
+			}
+			else {
+				l = mid+1;
+			}
+		}
+		return false;
+	}
+
 };
 class Datastruvture {
 public:
@@ -1363,6 +1396,57 @@ public:
 			}
 		}
 		return ret;
+	}
+	int firstUniqChar(string s) {
+		unordered_map<char, int> ans;
+		for (char _s : s) {
+			ans[_s]++;
+		}
+		for (int i = 0; i < s.size(); ++i) {
+			if (ans[s[i]] == 1) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	bool canConstruct(string ransomNote, string magazine) {
+		unordered_map<char, int> mag;
+		for (char m : magazine) {
+			mag[m]++;
+		}
+		for (char r : ransomNote) {
+			if (mag.count(r)) {
+				--mag[r];
+				if (mag[r] == 0) {
+					mag.erase(r);
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
+	}
+	bool isAnagram(string s, string t) {
+		unordered_map<char, int> ans;
+		for (auto _s : s) {
+			ans[_s]++;
+		}
+		for (auto _t : t) {
+			if (ans.count(_t)) {
+				--ans[_t];
+				if (ans[_t] == 0) {
+					ans.erase(_t);
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		if (ans.empty()) {
+			return true;
+		}
+		return false;
 	}
 };
 class DP {
@@ -1429,6 +1513,31 @@ public:
 			dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i]);//手中持有股票，不出售的情况
 		}
 		return dp[n - 1][0];
+	}
+	//740. 删除并获得点数
+	//将原数组按照每个数出现的次数重新构建一个新数组，把原先的问题当成跳楼梯问题中的跳两步或者是打家劫舍中的隔一家才能拿问题
+	int deleteAndEarn(vector<int>& nums) {
+		int n = nums.size();
+		int _max = 0;
+		if (n == 1) {
+			return nums[0];//确定边界
+		}
+		for (int i = 0; i < n; ++i) {
+			_max = max(_max, nums[i]);//确定循环次数
+		}
+		vector<int> temps(_max + 1);
+		for (int temp : nums) {
+			++temps[temp];//重新构建数组，根据nums中每个数出现的次数来构建
+		}
+		//滚动数组DP
+		int first = temps[0];
+		int second = max(temps[0], temps[1]);
+		for (int i = 2; i <= _max; ++i) {
+			int temp = second;
+			second = max(first + temps[i] * i, second);
+			first = temp;
+		}
+		return second;
 	}
 };
 
@@ -1612,6 +1721,50 @@ public:
 			return inStack.top();
 		}
 	}
+	//剑指 Offer 06. 从尾到头打印链表
+	vector<int> reversePrint(ListNode* head) {
+		stack<int> val;
+		vector<int> ans;
+		ListNode* node = head;
+		while (node != nullptr) {
+			val.push(node->val);
+			node = node->next;
+		}
+		while (!val.empty()) {
+			ans.push_back(val.top());
+			val.pop();
+		}
+		return ans;
+	}
+	//剑指 Offer 24. 反转链表
+	//链表题都应该画图，画图可以理解，通过局部反转最终反转整个链表
+	ListNode* reverseList(ListNode* head) {
+		ListNode* prev = nullptr;
+		ListNode* curr = head;
+		while (curr) {
+			ListNode* next = curr->next;
+			curr->next = prev;
+			prev = curr;
+			curr = next;
+		}
+		return prev;
+	}
+	//剑指 Offer 35. 复杂链表的复制
+	//看不懂题，水了
+	unordered_map<Node*, Node*> cachedNode;
+
+	Node* copyRandomList(Node* head) {
+		if (head == nullptr) {
+			return nullptr;
+		}
+		if (!cachedNode.count(head)) {
+			Node* headNew = new Node(head->val);
+			cachedNode[head] = headNew;
+			headNew->next = copyRandomList(head->next);
+			headNew->random = copyRandomList(head->random);
+		}
+		return cachedNode[head];
+	}
 };
 class MinStack {
 	stack<int> mainStack;
@@ -1647,6 +1800,6 @@ public:
 	}
 };
 int main() {
-	vector<vector<int>> test = { {1,2,3},{3,4,5} };
-	cout << test.size() << endl;
+	Solution::isPerfectSquare(16);
+
 }
