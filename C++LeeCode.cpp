@@ -1448,6 +1448,49 @@ public:
 		}
 		return false;
 	}
+	static bool hasCycle(ListNode* head) {
+		unordered_map<ListNode*, int>ans;
+		ListNode* node = head;
+		while (node->next != nullptr) {
+			if (ans.count(node) == 1) {
+				return false;
+			}
+			ans[node]++;
+			node = node->next;
+		}
+		return true;
+	}
+	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+		if (l1 == nullptr) {
+			return l2;
+		}
+		else if (l2 == nullptr) {
+			return l1;
+		}
+		else if (l1->val > l2->val) {
+			l2->next = mergeTwoLists(l1, l2->next);
+			return l2;
+		}
+		else {
+			l1->next = mergeTwoLists(l1->next, l2);
+			return l1;
+		}
+
+	}
+	//对于链表的删除操作，我们只需要获取要删除节点的next，然后让他的前一个节点指向这个next就可以了，其次就是设计内存管理的话，再将要删除的节点释放
+	ListNode* removeElements(ListNode* head, int val) {
+		struct ListNode* dummyHead = new ListNode(0, head);
+		struct ListNode* temp = dummyHead;
+		while (temp->next != NULL) {
+			if (temp->next->val == val) {
+				temp->next = temp->next->next;
+			}
+			else {
+				temp = temp->next;
+			}
+		}
+		return dummyHead->next;
+	}
 };
 class DP {
 public:
@@ -1800,6 +1843,17 @@ public:
 	}
 };
 int main() {
-	Solution::isPerfectSquare(16);
-
+	ListNode* head = new ListNode;
+	head->val = 3;
+	ListNode* node = new ListNode;
+	node->val = 2;
+	head->next = node;
+	ListNode* node1 = new ListNode;
+	node1->val = 0;
+	node->next = node1;
+	ListNode* node2 = new ListNode;
+	node2->val = 4;
+	node1->next = node2;
+	node2->next = node;
+	Datastruvture::hasCycle(head);
 }
