@@ -1491,6 +1491,53 @@ public:
 		}
 		return dummyHead->next;
 	}
+	ListNode* reverseList(ListNode* head) {
+		ListNode* prev = nullptr;
+		ListNode* curr = head;
+		while (curr != nullptr) {
+			ListNode* next = curr->next;
+			curr->next = prev;
+			prev = curr;
+			curr = next;
+		}
+		return prev;
+	}
+	ListNode* deleteDuplicates(ListNode* head) {
+		if (!head) {
+			return head;
+		}
+
+		ListNode* cur = head;
+		while (cur->next) {
+			if (cur->val == cur->next->val) {
+				cur->next = cur->next->next;
+			}
+			else {
+				cur = cur->next;
+			}
+		}
+
+		return head;
+	}
+	int findRepeatNumber(vector<int>& nums) {
+		unordered_map<int, int>_map;
+		for (auto num : nums) {
+			if (_map.count(num)) {
+				return num
+			}
+			else {
+				_map[num]++;
+			}
+		}
+		return -1;
+	}
+	int search(vector<int>& nums, int target) {
+		unordered_map<int, int>_map;
+		for (auto num : nums) {
+			_map[num]++;
+		}
+		return _map[target];
+	}
 };
 class DP {
 public:
