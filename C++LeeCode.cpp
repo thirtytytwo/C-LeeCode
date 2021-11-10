@@ -1538,6 +1538,41 @@ public:
 		}
 		return _map[target];
 	}
+	vector<int> preorderTraversal(TreeNode* root) {
+		vector<int> ans;
+		stack<TreeNode*> _stack;
+		_stack.push(root);
+		while (!_stack.empty()) {
+			TreeNode* curr = _stack.top();
+			_stack.pop();
+			ans.push_back(curr->val);
+			if (curr->left != nullptr) {
+				_stack.push(curr->left);
+			}
+			if (curr->right != nullptr) {
+				_stack.push(curr->right);
+			}
+		}
+		return ans;
+	}
+	vector<int> inorderTraversal(TreeNode* root) {
+		stack<TreeNode*> nodes;
+		vector<int>ans;
+		TreeNode* curr = root;
+		while (curr != nullptr || !nodes.empty()) {
+			if (curr != nullptr) {
+				nodes.push(curr);
+				curr = curr->left;
+			}
+			else {
+				curr = nodes.top();
+				nodes.pop();
+				ans.push_back(curr->val);
+				curr = curr->right;
+			}
+		}
+		return ans;
+	}
 };
 class DP {
 public:
