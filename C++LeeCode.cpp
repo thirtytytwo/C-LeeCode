@@ -1375,7 +1375,7 @@ public:
 	}
 
 };
-class Datastruvture {
+class Datastructure {
 public:
 	static vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
 		if (nums2.size() > nums1.size()) {
@@ -1523,7 +1523,7 @@ public:
 		unordered_map<int, int>_map;
 		for (auto num : nums) {
 			if (_map.count(num)) {
-				return num
+				return num;
 			}
 			else {
 				_map[num]++;
@@ -1546,11 +1546,11 @@ public:
 			TreeNode* curr = _stack.top();
 			_stack.pop();
 			ans.push_back(curr->val);
-			if (curr->left != nullptr) {
-				_stack.push(curr->left);
-			}
 			if (curr->right != nullptr) {
 				_stack.push(curr->right);
+			}
+			if (curr->left != nullptr) {
+				_stack.push(curr->left);
 			}
 		}
 		return ans;
@@ -1572,6 +1572,112 @@ public:
 			}
 		}
 		return ans;
+	}
+	vector<vector<int>> levelOrder(TreeNode* root) {
+		queue<TreeNode*> que;
+		vector<vector<int>> ret;
+		que.push(root);
+		while (que.size() > 0) {
+			int size = que.size();
+			vector<int> temp;
+			for (int i = 0; i < size; ++i) {
+				TreeNode* curr = que.front();
+				que.pop();
+				temp.push_back(curr->val);
+				if (curr->left != nullptr) {
+					que.push(curr->left);
+				}
+				if (curr->right != nullptr) {
+					que.push(curr->right);
+				}
+			}
+			ret.push_back(temp);
+		}
+		return ret;
+	}
+
+	bool check(TreeNode* p, TreeNode* q) {
+		if (!p && !q) return true;
+		if (!p || !q) return false;
+		return p->val == q->val && check(p->left, q->right) && check(p->right, q->left);
+	}
+
+	bool isSymmetric(TreeNode* root) {
+		return check(root, root);
+	}
+
+	TreeNode* Change(TreeNode* curr) {
+		if (!curr) {
+			return nullptr;
+		}
+		TreeNode* temp = curr->left;
+		curr->left = curr->right;
+		curr->right = temp;
+		Change(curr->left);
+		Change(curr->right);
+	}
+	TreeNode* invertTree(TreeNode* root) {
+		Change(root);
+		return root;
+	}
+
+	bool hasPathSum(TreeNode* root, int sum) {
+		if (root == nullptr) {
+			return false;
+		}
+		queue<TreeNode*> que_node;
+		queue<int> que_val;
+		que_node.push(root);
+		que_val.push(root->val);
+		while (!que_node.empty()) {
+			TreeNode* now = que_node.front();
+			int temp = que_val.front();
+			que_node.pop();
+			que_val.pop();
+			if (now->left == nullptr && now->right == nullptr) {
+				if (temp == sum) {
+					return true;
+				}
+				continue;
+			}
+			if (now->left != nullptr) {
+				que_node.push(now->left);
+				que_val.push(now->left->val + temp);
+			}
+			if (now->right != nullptr) {
+				que_node.push(now->right);
+				que_val.push(now->right->val + temp);
+			}
+		}
+		return false;
+	}
+
+	TreeNode* searchBST(TreeNode* root, int val) {
+		while (root != nullptr) {
+			if (root->val > val) {
+				root = root->left;
+			}
+			else if (root->val < val) {
+				root = root->right;
+			}
+			else if (root->val = val) {
+				return root;
+			}
+		}
+		return nullptr;
+	}
+
+	bool helper(TreeNode* root, long long lower, long long upper) {
+		if (root == nullptr) {
+			return true;
+		}
+		if (root->val <= lower || root->val >= upper) {
+			return false;
+		}
+		return helper(root->left, lower, root->val) && helper(root->right, root->val, upper);
+	}
+	bool isValidBST(TreeNode* root) {
+		return helper(root, LONG_MIN, LONG_MAX);
 	}
 };
 class DP {
@@ -1663,6 +1769,48 @@ public:
 			first = temp;
 		}
 		return second;
+	}
+
+	static bool wordBreak(string s, vector<string>& wordDict) {
+		unordered_set<string>wordSet;
+		for (auto word : wordDict) {
+			wordSet.insert(word);
+		}
+		int n = s.size();
+		vector<bool>dp(n + 1);
+		dp[0] = true;
+		for (int i = 1; i <= n; ++i)
+		{
+			for (int j = 0; j < i; ++j)
+			{
+				if (dp[j] && wordSet.find(s.substr(j, i - j)) != wordSet.end()) {
+					dp[i] = true;
+				}
+			}
+		}
+		return dp[n];
+	}
+
+	static int trap(vector<int>& height) {
+		int n = height.size();
+		if (n == 0) {
+			return 0;
+		}
+		vector<int> rightMax(n);
+		rightMax[0] = height[0];
+		for (int i = 1; i < n; ++i) {
+			rightMax[i] = max(rightMax[i - 1], height[i]);
+		}
+		vector<int> leftMax(n);
+		leftMax[n - 1] = height[n - 1];
+		for (int i = n - 2; i >= 0; --i) {
+			leftMax[i] = max(leftMax[i + 1], height[i]);
+		}
+		int ans = 0;
+		for (int i = 0; i < n; ++i) {
+			ans += min(rightMax[i], leftMax[i]) - height[i];
+		}
+		return ans;
 	}
 };
 
@@ -1925,17 +2073,6 @@ public:
 	}
 };
 int main() {
-	ListNode* head = new ListNode;
-	head->val = 3;
-	ListNode* node = new ListNode;
-	node->val = 2;
-	head->next = node;
-	ListNode* node1 = new ListNode;
-	node1->val = 0;
-	node->next = node1;
-	ListNode* node2 = new ListNode;
-	node2->val = 4;
-	node1->next = node2;
-	node2->next = node;
-	Datastruvture::hasCycle(head);
+	vector<int> test = { 0,1,0,2,1,0,1,3,2,1,2,1 };
+	DP::trap(test);
 }
