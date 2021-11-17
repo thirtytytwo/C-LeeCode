@@ -1155,15 +1155,15 @@ public:
 	vector<vector<int>> generate(int numRows) {
 		vector<vector<int>> ans(numRows);
 		for (int i = 0; i < numRows; ++i) {
-			ans[i].resize(i + 1);
-			ans[i][0] = ans[i][i] = 1;
+			ans[i].resize(i + 1);//三角列数增加1
+			ans[i][0] = ans[i][i] = 1;//确定两边界的数
 			for (int j = 1; j < i; ++j) {
-				ans[i][j] = ans[i - 1][j - 1] + ans[i - 1][j];
+				ans[i][j] = ans[i - 1][j - 1] + ans[i - 1][j];//递推公式，由上一行的两个数相加推出这个数
 			}
 		}
 		return ans;
 	}
-	//leecode556  a不动矩阵
+	//leecode556  
 	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {
 		int m = nums.size();
 		int n = nums[0].size();
@@ -1811,6 +1811,79 @@ public:
 			ans += min(rightMax[i], leftMax[i]) - height[i];
 		}
 		return ans;
+	}
+
+	int numberOfArithmeticSlices(vector<int>& nums) {
+		int n = nums.size();
+		int count = 0;
+		int ans = 0;
+		for (int i = 2; i < n; ++i) {
+			nums[i] = nums[i - 1] == nums[i - 1] - nums[i - 2] ? ans += ++count : count = 0;
+		}
+		return ans;
+	}
+
+	int numDecodings(string s) {
+		int n = s.size();
+		vector<int>dp(n + 1);
+		dp[0] = 1;
+		for (int i = 1; i <= n; ++i) {
+			if (s[i - 1] != '0') {
+				dp[i] += dp[i - 1];
+			}
+			if (i > 1 && (s[i - 2] - '0') * 10 + (s[i - 1] - '0') <= 26 && s[i - 1] != '0') {
+				dp[i] += dp[i - 2];
+			}
+		}
+		return dp[n];
+	}
+	int numTrees(int n) {
+		vector<int> dp(n + 1);//dp==n个节点的不同二叉树的个数
+		dp[0] = 1;
+		dp[1] = 1;
+		//dp[i] = 从0到n的以i为根节点的公式dp[i-1]*dp[n-i]，那么i个数可以有i个根节点，所以是从0到i的结果相加
+		for (int i = 2; i <= n; ++i) {
+			for (int j = 1; j <= i; ++j) {
+				dp[i] += dp[j - 1] * dp[i - j];//这里的i就相当于上面的n，j就表示上面的i，这里求的是有i个数，从0到i做根节点的所有结果相加
+			}
+		}
+		return dp[n];
+	}
+
+	int minFallingPathSum(vector<vector<int>>& matrix) {
+		//获取行和列的数
+		int rows = matrix.size();
+		int cols = matrix[0].size();
+
+		//因为减少空间复杂度，可以直接复用matrix数组，我们采用从尾向头遍历数组，并将每个结果存入第一行的对应元素中
+		for (int i = rows - 2; i >= 0; --i)
+		{
+			for (int j = 0; j < cols; ++j)
+			{
+				//这行代码是不用边界检测的所以优先赋值
+				int curr = matrix[i + 1][j];
+				//边界检测条件1
+				if (j > 0)
+				{
+					curr = min(curr, matrix[i + 1][j - 1]);
+				}
+				//边界检测条件2
+				if (j < cols - 1)
+				{
+					curr = min(curr, matrix[i + 1][j + 1]);
+				}
+				matrix[i][j] += curr;
+			}
+		}
+		//初始化res为最大值，好比较较小数
+		int res = INT_MAX;
+		//遍历数组的第一行的每个元素求出最小值
+		for (int i = 0; i < cols; ++i)
+		{
+			res = min(res, matrix[0][i]);
+		}
+
+		return res;
 	}
 };
 
