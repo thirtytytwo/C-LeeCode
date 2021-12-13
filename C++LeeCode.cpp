@@ -2145,6 +2145,92 @@ public:
 		return minStack.top();
 	}
 };
+class ChunZhao {
+	int lengthOfLongestSubstring(string s) {
+		unordered_set<char> stringset;
+
+		int n = s.size();
+
+		int rk = -1;
+		int ans = 0;
+		for (int i = 0; i < n; ++i) {
+			if (i > 0) {
+				stringset.erase(s[i - 1]);//左指针向右移动，所以要删除前面的字符
+			}
+			while (rk+1 < n && stringset.count(s[rk+1]) == 0) {//初始化rk=-1，所以需要rk+1来作为判断
+				stringset.insert(s[rk + 1]);
+				rk++;
+			}
+			ans = max(ans, rk - i + 1);
+		}
+		return ans;
+	}
+	int getKthElement(const vector<int>& nums1, const vector<int>& nums2, int k) {
+		int m = nums1.size();
+		int n = nums2.size();
+
+		int index1 = 0;
+		int index2 = 0;
+
+		while (true) {
+			//边界情况
+			if (index1 == m) {
+				return nums2[index2 + k - 1];
+			}
+			if (index2 == n) {
+				return nums1[index1 + k - 1];
+			}
+			if (k == 1) {
+				return min(nums1[index1], nums2[index2]);
+			}
+
+			int newIndex1 = min(index1 + k / 2 - 1, m - 1);
+			int newIndex2 = min(index2 + k / 2 - 1, n - 1);
+
+			int pivot1 = nums1[newIndex1];
+			int pivot2 = nums2[newIndex2];
+
+			if (pivot1 <= pivot2) {
+				k -= newIndex1 - index1 + 1;
+				index1 = newIndex1 + 1;
+			}
+			else {
+				k -= newIndex2 - index2 + 1;
+				index2 = newIndex2 + 1;
+			}
+
+		}
+	}
+	double findMedianSortedArrays0(vector<int>& nums1, vector<int>& nums2) {
+		int total = nums1.size() + nums2.size();
+		if (total % 2 == 1) {
+			return (double)getKthElement(nums1,nums2,(total + 1)/2);
+		}
+		else {
+			return (getKthElement(nums1, nums2, total / 2) + getKthElement(nums1, nums2, total / 2 + 1)) / 2.0;
+		}
+	}
+	double findMedianSortedArrays1(vector<int>& nums1, vector<int>& nums2) {
+		if (nums1.size() > nums2.size()) {
+			return findMedianSortedArrays1(nums2, nums1);
+		}
+
+		int m = nums1.size();
+		int n = nums2.size();
+
+		int totalLeft = (n + m + 1) / 2;
+
+		//初始是0到m区间，从小的数组中找分割线才不会导致数组分割线中有一边没有元素
+		int left = 0;
+		int right = m;
+
+		while (left < right) {
+			int i = left + (right - left + 1) / 2;
+			int j = totalLeft - i;
+		}
+
+	}
+};
 int main() {
 	vector<int> test = { 0,1,0,2,1,0,1,3,2,1,2,1 };
 	DP::trap(test);
