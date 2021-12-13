@@ -2174,6 +2174,7 @@ class ChunZhao {
 
 		while (true) {
 			//边界情况
+			//如果出现有一个数组全部被排除的情况，那么第k小的数就在另一个数组中
 			if (index1 == m) {
 				return nums2[index2 + k - 1];
 			}
@@ -2190,6 +2191,7 @@ class ChunZhao {
 			int pivot1 = nums1[newIndex1];
 			int pivot2 = nums2[newIndex2];
 
+			//二分查找后进行的剪枝
 			if (pivot1 <= pivot2) {
 				k -= newIndex1 - index1 + 1;
 				index1 = newIndex1 + 1;
