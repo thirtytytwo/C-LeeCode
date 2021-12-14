@@ -1373,7 +1373,34 @@ public:
 		}
 		return false;
 	}
+	
+	//12.14
+	int scheduleCourse(vector<vector<int>>& courses) {
+		//首先先根据结束时间升序排序，结束时间越前能选的就越多
+		sort(courses.begin(), courses.end(), [](const auto& c0, const auto& c1) {
+			return c0[1] < c1[1];
+		});
 
+		//优先队列存储开始时间短的课程
+		priority_queue<int> q;
+		int total = 0;
+
+		for (const auto& course : courses) {
+			int ti = course[0], di = course[1];
+			if (total + ti <= di) {
+				total += ti;
+				q.push(ti);
+			}
+			//如果这个的开始时间比队列的小，那么就替换，保证能选的最多
+			else if (!q.empty() && q.top() > ti) {
+				total -= q.top() - ti;
+				q.pop();
+				q.push(ti);
+			}
+		}
+		return q.size();
+
+	}
 };
 class Datastructure {
 public:
@@ -2231,6 +2258,39 @@ class ChunZhao {
 			int j = totalLeft - i;
 		}
 
+	}
+
+	vector<vector<int>> threeSum(vector<int>& nums) {
+		int n = nums.size();
+
+		sort(nums.begin(), nums.end());
+
+		vector<vector<int>> ans;
+
+		for (int first = 0; first < n; ++first) {
+			if (first > 0 && nums[first] == nums[first - 1]) {
+				continue;
+			}
+
+			int third = n - 1;
+			int target = -nums[first];
+			for (int second = first + 1; second < n; ++second) {
+				if (second > first + 1 && nums[second] == nums[second - 1]) {
+					continue;
+				}
+
+				while (second < third && nums[second] + nums[third] > target) {
+					--third;
+				}
+				if (second == third) {
+					break;
+				}
+				if (nums[second] + nums[third] == target) {
+					ans.push_back({ nums[first],nums[second],nums[third] });
+				}
+			}
+		}
+		return ans;
 	}
 };
 int main() {
