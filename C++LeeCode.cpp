@@ -2292,6 +2292,28 @@ class ChunZhao {
 		}
 		return ans;
 	}
+	//运用了前后缀和的思路，不过只是新建一个数组储存前后缀和结果
+	vector<int> productExceptSelf(vector<int>& nums) {
+		int n = nums.size();
+		vector<int> ans(n, 1);
+
+		//储存前缀和
+		for (int i = 1; i < n; ++i) {
+			ans[i] = ans[i - 1] * nums[i - 1];
+		}
+
+		//新建一个变量R，存储后缀，然后在每一次循环时先将上一次的后缀存进ans数组中
+		int R = 1;
+		for (int i = n - 1; i >= 0; --i) {
+			ans[i] *= R;
+			R *= nums[i];
+		}
+		return ans;
+	}
+
+	string addStrings(string num1, string num2) {
+
+	}
 };
 int main() {
 	vector<int> test = { 0,1,0,2,1,0,1,3,2,1,2,1 };
