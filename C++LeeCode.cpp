@@ -1401,6 +1401,26 @@ public:
 		return q.size();
 
 	}
+
+	int findRadius(vector<int>& houses, vector<int>& heaters) {
+		sort(houses.begin(), houses.end());
+		sort(heaters.begin(), heaters.end());
+
+		int ans = 0;
+
+		for (int i = 0, j = 0; i < houses.size(); ++i) {
+			int current = abs(houses[i] - heaters[j]);
+			//有序排列后，遍历heaters数组，因为是有序的，要不就是一个条件遍历到了边界，要不是就是找到更小的，然后更新
+			while (j < heaters.size() - 1 && abs(houses[i] - heaters[j]) >= abs(houses[i] - heaters[j + 1])) {
+				j++;
+				current = min(abs(houses[i] - heaters[j]), current);
+			}
+			//最后更新出来的最小的就是这个房子覆盖热水器的最小值，然后把所有房子的热水器最小值取最大值出来即可
+			ans = max(ans, current);
+		}
+		return ans;
+	}
+
 };
 class Datastructure {
 public:
@@ -2173,6 +2193,7 @@ public:
 	}
 };
 class ChunZhao {
+public:
 	int lengthOfLongestSubstring(string s) {
 		unordered_set<char> stringset;
 
@@ -2311,11 +2332,44 @@ class ChunZhao {
 		return ans;
 	}
 
+	//字符串相加，依次访问字符串中的字符-'0'字符获取他的数值，然后进位，最后输出前对他进行倒置
 	string addStrings(string num1, string num2) {
+		int i = num1.size() - 1;
+		int j = num2.size() - 1;
+		int add = 0;
+		string ans = "";
+		while (i >= 0 || j >= 0 || add != 0) {
+			int x = i >= 0 ? num1[i] - '0' : 0;
+			int y = j >= 0 ? num2[j] - '0' : 0;
+			int result = x + y + add;
+			ans.push_back('0' + result % 10);
+			add = result / 10;
 
+			i--;
+			j--;
+		}
+		reverse(ans.begin(), ans.end());
+		return ans;
 	}
+public:
+	 static int subarraysDivByK(vector<int>& nums, int k) {
+		unordered_map<int, int> _map = { {0,1} };
+		int ans = 0;
+		int sum = 0;
+		for (auto num : nums) {
+			sum += num;
+			//因为c++涉及的负数取模也是负数，这个是处理的手段，等同于sum%k
+			//我们要求的是前缀和数组中ij位置中间的一段求余是不是零，就是(P[i] - P[j])%k==0的问题，经过数学变换，其实就是统计P[i]出现的次数
+			int mod = (sum % k + k) % k;
+			if (_map.count(mod)) {
+				ans += _map[mod];
+			}
+			++_map[mod];
+		}
+		return ans;
+	 }
 };
 int main() {
-	vector<int> test = { 0,1,0,2,1,0,1,3,2,1,2,1 };
-	DP::trap(test);
+	vector<int> test = { 4, 5, 0, -2, -3, 1 };
+	ChunZhao::subarraysDivByK(test, 5);
 }
