@@ -2369,6 +2369,53 @@ public:
 		return ans;
 	 }
 };
+//春招冲刺题
+class LRUCache {
+private:
+	int _capacity;
+	list<int> keyList;
+	//list<int>::iterator利用迭代器记录列表中元素的位置
+	unordered_map<int, pair<int, list<int>::iterator>> _map;
+
+	void Insert(int key, int value) {
+		keyList.push_back(key);
+		_map[key] = make_pair(value, --keyList.end());
+	}
+public:
+	LRUCache(int capacity) {
+		_capacity = capacity;
+	}
+
+	int get(int key) {
+		//find返回的是迭代器类型
+		auto it = _map.find(key);
+		if (it != _map.end()) {
+			//迭代器->second指的就是在哈希表中的value元素，再有一个second就是value元素中的second
+			keyList.erase(it->second.second);
+			keyList.push_back(key);
+			_map[key].second = (--keyList.end());
+			return it->second.first;
+		}
+		return -1;
+	}
+
+	void put(int key, int value) {
+		if (get(key) != -1) {
+			_map[key].first = value;
+			return;
+		}
+		if (_map.size() < _capacity) {
+			Insert(key, value);
+		}
+		else {
+			int removeKey = keyList.front();
+			keyList.pop_front();
+			_map.erase(removeKey);
+
+			Insert(key, value);
+		}
+	}
+};
 int main() {
 	vector<int> test = { 4, 5, 0, -2, -3, 1 };
 	ChunZhao::subarraysDivByK(test, 5);
