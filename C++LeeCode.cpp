@@ -1421,6 +1421,93 @@ public:
 		return ans;
 	}
 
+	int repeatedStringMatch(string a, string b) {
+		string ss = "";
+		int n = a.size();
+		int m = b.size();
+		int count = m / n;//查看被检测的字符串是叠加字符串的多少倍，用来确定上下界
+
+		//count +2为上界
+		for (int i = 0; i <= count + 2; ++i) {
+			if (ss.find(b) != -1) {
+				return i;
+			}
+			else {
+				ss += a;
+			}
+		}
+		return -1;
+	}
+
+#pragma region "leetcode 1.10"
+	//通过设中间的一个数，来确定前面的数和后面的数，确立中间起始位和末尾位，之后加上每一位的判断，一共三次循环
+	bool isAdditiveNumber(string num) {
+		int n = num.size();
+		//确定中间的起始位开始遍历
+		for (int secondStart = 1; secondStart < n - 1; ++secondStart) {
+			//意思是开始的数First是以0开头的两位以上的数，所以不能取
+			if (num[0] == '0' && secondStart != 1) {
+				break;
+			}
+			for (int secondEnd = secondStart; secondEnd < n - 1; ++secondEnd) {
+				//这里同理是second是0开头的两位以上的数不能取
+				if (num[secondStart] == '0' && secondEnd != secondStart) {
+					break;
+				}
+				//判断
+				if (Valid(secondStart, secondEnd, num)) {
+					return true;
+				}
+			}
+		}
+	}
+	bool Valid(int secondStart, int secondEnd, string num) {
+		int n = num.size();
+		int firstStart = 0;
+		int firstEnd = secondStart - 1;
+		while (secondEnd <= n - 1) {
+			string third = StringAdd(num, firstStart, firstEnd, secondStart, secondEnd);//求出如果符合条件，third的值
+			int thirdStart = secondEnd + 1;
+			int thirdEnd = secondEnd + third.size();
+			if (thirdEnd >= n || !(num.substr(thirdStart, thirdEnd - thirdStart + 1) == third)) {
+				break;
+			}
+			if (thirdEnd == n - 1) {
+				return true;
+			}
+
+			firstStart = secondStart;
+			firstEnd = secondEnd;
+			secondStart = thirdStart;
+			secondEnd = thirdEnd;
+		}
+		return false;
+	}
+	string StringAdd(string s, int firstStart, int firstEnd, int secondStart, int secondEnd) {
+		string third;
+		int carry = 0, cur = 0;
+		while (firstEnd >= firstStart || secondEnd >= secondStart || carry != 0) {
+			cur = carry;
+			if (firstEnd >= firstStart) {
+				cur += s[firstEnd] - '0';
+				firstEnd--;
+			}
+			if (secondEnd >= secondStart) {
+				cur += s[secondEnd] - '0';
+				secondEnd--;
+			}
+			//carry用于进位的计算
+			carry = cur / 10;
+			cur %= 10;
+
+			third.push_back(cur + '0');
+		}
+		//因为是从个位开始算，所以要倒置一下
+		reverse(third.begin(), third.end());
+		return third;
+	}
+#pragma endregion
+
 };
 class Datastructure {
 public:
