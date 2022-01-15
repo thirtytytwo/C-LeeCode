@@ -1507,6 +1507,40 @@ public:
 		return third;
 	}
 #pragma endregion
+	//1.15 多路归并，优先队列
+	bool flag = true;
+	vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+		vector<vector<int>> ans;
+		int n = nums1.size();
+		int m = nums2.size();
+		if (n > m) {
+			swap(nums1, nums2);
+			swap(n, m);
+			flag = false;
+		}
+
+		auto cmp = [&](const auto& a, const auto& b) {
+			return nums1[a.first] + nums2[a.second] > nums1[b.first] + nums2[b.second];
+		};
+
+		priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp) > q(cmp);
+
+		for (int i = 0; i < min(n, k); ++i) {
+			q.push({ i,0 });
+		}
+		
+		while (ans.size() < k && q.size() != 0) {
+			int a = q.top().first;
+			int b = q.top().second;
+			q.pop();
+			flag ? ans.push_back({ nums1[a],nums2[b] }) : ans.push_back({ nums2[b],nums1[a] });
+			if (b + 1 < m) {
+				q.push({ a,b + 1 });
+			}
+		}
+
+		return ans;
+	}
 
 };
 class Datastructure {
@@ -2446,7 +2480,7 @@ public:
 		for (auto num : nums) {
 			sum += num;
 			//因为c++涉及的负数取模也是负数，这个是处理的手段，等同于sum%k
-			//我们要求的是前缀和数组中ij位置中间的一段求余是不是零，就是(P[i] - P[j])%k==0的问题，经过数学变换，其实就是统计P[i]出现的次数
+			//我们要求的是前缀和数组中ij位置中间的一段求余是不是零，就是(P[i] - P[j])%k==0,数学变换后就得p[i]%k == p[j] %k的问题，其实就是统计P[i] %k结果出现的次数，如果下次遍历发现在哈希表中有这个结果，那么就加进去
 			int mod = (sum % k + k) % k;
 			if (_map.count(mod)) {
 				ans += _map[mod];
