@@ -11,6 +11,7 @@
 #include <cmath>
 #include <string>
 #include <set>
+#include <string_view>
 
 using namespace std;
 
@@ -1542,6 +1543,52 @@ public:
 		return ans;
 	}
 
+	//1.27 简单题
+	int countValidWords(string sentence) {
+		int n = sentence.length();
+		int l = 0, r = 0;//切割的左边界和右边界
+		int ret = 0;//返回的结果
+		string slice(sentence);
+		while (true) {
+			while (l < n && sentence[l] == ' ') {
+				l++;//确定左边界
+			}
+			if (l >= n) {
+				break;
+			}
+			r = l + 1;
+			while (r < n && sentence[r] != ' ') {
+				r++;//根绝左边界累加确定右边界
+			}
+			if (isValid(slice.substr(l, r - l))) { // 判断根据空格分解出来的 token 是否有效
+				ret++;
+			}
+			l = r + 1;//检测完一组之后将左边界重置，检测下一组
+		}
+		return ret;
+	}
+
+	bool isValid(const string& word) {
+		int n = word.length();
+		bool has_hyphens = false;
+		for (int i = 0; i < n; i++) {
+			if (word[i] >= '0' && word[i] <= '9') {//判断是不是数字
+				return false;
+			}
+			else if (word[i] == '-') {
+				if (has_hyphens == true || i == 0 || i == n - 1 || !islower(word[i - 1]) || !islower(word[i + 1])) {//判断是不是大写字母
+					return false;
+				}
+				has_hyphens = true;
+			}
+			else if (word[i] == '!' || word[i] == '.' || word[i] == ',') {//判断是不是标点
+				if (i != n - 1) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 };
 class Datastructure {
 public:
@@ -2472,7 +2519,6 @@ public:
 		reverse(ans.begin(), ans.end());
 		return ans;
 	}
-public:
 	 static int subarraysDivByK(vector<int>& nums, int k) {
 		unordered_map<int, int> _map = { {0,1} };
 		int ans = 0;
@@ -2488,6 +2534,37 @@ public:
 			++_map[mod];
 		}
 		return ans;
+	 }
+	//并查集
+	//第一题
+	 //dfs解法
+	 int numIslands(vector<vector<char>>& grid) {
+		 int r = grid.size();
+		 if (r == 0) {
+			 return 0;
+		 }
+		 int c = grid[0].size();
+
+		 int ans = 0;
+		 for (int i = 0; i < r; ++i) {
+			 for (int j = 0; j < c; ++j) {
+				 if (grid[i][j] == '1') {
+					 ++ans;
+					 dfs(grid, i, j);
+				 }
+			 }
+		 }
+		 return ans;
+	 }
+	 void dfs(vector<vector<char>>& grid,int r,int c) {
+		 int nr = grid.size();
+		 int nc = grid[0].size();
+
+		 grid[r][c] = '0';
+			 if (r - 1 >= 0 && grid[r - 1][c] == '1') { dfs(grid, r - 1, c); }
+			 if (c - 1 >= 0 && grid[r][c - 1] == '1') { dfs(grid, r, c - 1); }
+			 if (r + 1 < nr && grid[r + 1][c] == '1') { dfs(grid, r + 1, c); }
+			 if (c + 1 < nc && grid[r][c + 1] == '1') { dfs(grid, r, c + 1); }
 	 }
 };
 //春招冲刺题
@@ -2538,6 +2615,4 @@ public:
 	}
 };
 int main() {
-	vector<int> test = { 4, 5, 0, -2, -3, 1 };
-	ChunZhao::subarraysDivByK(test, 5);
 }
