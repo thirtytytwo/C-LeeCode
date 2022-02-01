@@ -11,7 +11,7 @@
 #include <cmath>
 #include <string>
 #include <set>
-#include <string_view>
+#include <numeric>
 
 using namespace std;
 
@@ -37,6 +37,32 @@ public:
 		val = _val;
 		next = NULL;
 		random = NULL;
+	}
+};
+
+class UnionFind {
+private:
+	vector<int> parent;//用来存储他的父亲节点信息
+public:
+	UnionFind() {
+		parent.resize(26);
+		iota(parent.begin(), parent.end(), 0);//表示迭代器走过得地方赋值对比上一个加一，初始值是零
+	}
+
+	int Find(int index) {
+		if (index == parent[index]) {//意思就是这个元素记录的父亲节点也是这个元素，也就是他就已经是根节点了，就可以直接返回它本身
+			return index;
+		}
+
+		parent[index] = Find(parent[index]);//不是的话就沿着记录的父亲节点一直向上找，直到找到根节点
+		return parent[index];
+
+	}
+
+	void unite(int index1, int index2) {
+		//两个变量分别代表等式左右
+		//因为等式具有传递性，所以把等式右边作为等式左边的父亲节点
+		parent[Find(index1)] = Find(index2);//把左边的最上级的父亲节点替换成等式右边的根节点（完全压缩？）
 	}
 };
 
@@ -2565,6 +2591,28 @@ public:
 			 if (c - 1 >= 0 && grid[r][c - 1] == '1') { dfs(grid, r, c - 1); }
 			 if (r + 1 < nr && grid[r + 1][c] == '1') { dfs(grid, r + 1, c); }
 			 if (c + 1 < nc && grid[r][c + 1] == '1') { dfs(grid, r, c + 1); }
+	 }
+	//第二题
+	 bool equationsPossible(vector<string>& equations) {
+		 UnionFind uf;
+		 for (const string& str : equations) {
+			 if (str[1] == '=') {
+				 int index1 = str[0] - 'a';
+				 int index2 = str[3] - 'a';
+				 uf.unite(index1, index2);
+			 }
+		 }
+
+		 for (const string& str : equations) {
+			 if (str[1] == '!') {
+				 int index1 = str[0] - 'a';
+				 int index2 = str[3] - 'a';
+				 if (uf.Find(index1) == uf.Find(index2)) {//根绝等式的传递性，如果向上寻找父亲节点发现有同一根节点则代表等式不成立
+					 return false;
+				 }
+			 }
+		 }
+		 	 return true;
 	 }
 };
 //春招冲刺题
