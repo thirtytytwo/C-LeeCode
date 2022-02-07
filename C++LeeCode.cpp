@@ -2643,6 +2643,42 @@ public:
 		 }
 		 	 return true;
 	 }
+	 //动态规划
+	 //第一题
+	 static string longestPalindrome(string s) {
+		 int n = s.size();
+		 if (n < 2) {
+			 return s;
+		 }
+		 vector<vector<bool>> dp(n, vector<bool>(n));
+
+		 int maxlen = 1;
+		 int begin = 0;
+		 for (int i = 0; i < n; i++) {
+			 dp[i][i] = true;
+		 }
+		 for (int j = 1; j < n; ++j) {
+			 for (int i = 0; i < j; ++i) {
+				 if (s[i] != s[j]) {
+					 dp[i][j] = false;
+				 }
+				 else {
+					 if (j - i < 3) {
+						 dp[i][j] = true;
+					 }
+					 else {
+						 dp[i][j] = dp[i + 1][j - 1];
+					 }
+				 }
+
+				 if (dp[i][j] && j - i + 1 > maxlen) {
+					 begin = i;
+					 maxlen = j - i + 1;
+				 }
+			 }
+		 }
+		 return s.substr(begin, begin + maxlen - 1);
+	 }
 };
 //春招冲刺题
 class LRUCache {
@@ -2692,5 +2728,6 @@ public:
 	}
 };
 int main() {
-	Solution::longestDiverseString(1, 1, 7);
+	string test = "cbbd";
+	ChunZhao::longestPalindrome(test);
 }
