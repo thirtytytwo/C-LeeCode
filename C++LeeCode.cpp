@@ -1615,6 +1615,35 @@ public:
 		}
 		return true;
 	}
+	//2.7
+	//贪心，每次都让最多的char加进去，在符合规则的情况下
+	static string longestDiverseString(int a, int b, int c) {
+		string ret;
+		vector<pair<int, char>>arr = { {a,'a'},{b,'b'},{c,'c'} };
+
+		while (true) {
+			sort(arr.begin(), arr.end(), [](const pair<int, char>& a, const pair<int, char>& b) {return a.first > b.first; });
+			bool hasNext = false;
+
+			for (auto &a : arr) {
+				int m = ret.size();
+				if (a.first <= 0) {
+					break;//如果已经没有了，那么就跳过
+				}
+				if (m >= 2 && ret[m - 2] == a.second && ret[m - 1] == a.second) {
+					continue;//不符和题目规则，也跳过
+				}
+				hasNext = true;
+				ret.push_back(a.second);
+				a.first--;
+				break;
+			}
+			if (!hasNext) {
+				break;
+			}
+		}
+		return ret;
+	}
 };
 class Datastructure {
 public:
@@ -2663,4 +2692,5 @@ public:
 	}
 };
 int main() {
+	Solution::longestDiverseString(1, 1, 7);
 }
