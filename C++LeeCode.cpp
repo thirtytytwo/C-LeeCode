@@ -2354,6 +2354,7 @@ public:
 	}
 	//剑指 Offer 24. 反转链表
 	//链表题都应该画图，画图可以理解，通过局部反转最终反转整个链表
+	//其实就是反转的指向
 	ListNode* reverseList(ListNode* head) {
 		ListNode* prev = nullptr;
 		ListNode* curr = head;
@@ -2367,19 +2368,45 @@ public:
 	}
 	//剑指 Offer 35. 复杂链表的复制
 	//看不懂题，水了
+	//2.18已经读懂，对给定链表进行深拷贝，因为题中链表除了next节点还有random节点，所以不能按顺序依次拷贝而是需要利用哈希表存储我们已经创建的节点，在递归过程中如果已经创建了就直接用就行了
 	unordered_map<Node*, Node*> cachedNode;
 
 	Node* copyRandomList(Node* head) {
 		if (head == nullptr) {
-			return nullptr;
+			return nullptr;//题意设定的边界条件
 		}
-		if (!cachedNode.count(head)) {
+		if (!cachedNode.count(head)) {//如果没有
 			Node* headNew = new Node(head->val);
-			cachedNode[head] = headNew;
-			headNew->next = copyRandomList(head->next);
+			cachedNode[head] = headNew;//哈希表存储节点,存储的是当前的节点值
+			headNew->next = copyRandomList(head->next);//递归搜索next和random
 			headNew->random = copyRandomList(head->random);
 		}
-		return cachedNode[head];
+		return cachedNode[head];//如果有，直接返回
+	}
+
+	//剑指offer 05 替换空格
+	//利用一个新string容器，浅拷贝原来的string，遇到空格就按照提议多加三个字母
+	string replaceSpace(string s) {
+		string ans;
+		for (auto c : s) {
+			if (c == ' ') {
+				ans.push_back('%');
+				ans.push_back('2');
+				ans.push_back('0');
+			}
+			else {
+				ans.push_back(c);
+			}
+		}
+		return ans;
+	}
+
+	//剑指offer 58 左旋字符串
+	//对字符串进行复制一份，然后从需要左旋的位置开始截取复制前字符串原长度即可
+	string reverseLeftWords(string s, int n) {
+		int len = s.size();
+		s += s;
+		return s.substr(n, len);
 	}
 };
 class MinStack {
