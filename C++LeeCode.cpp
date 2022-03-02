@@ -1,4 +1,4 @@
-﻿
+
 #include <iostream>
 #include <vector>
 #include "limits.h"
@@ -2408,6 +2408,78 @@ public:
 		s += s;
 		return s.substr(n, len);
 	}
+
+	//剑指offer 04 二维数组中查找
+	//根据题意，递增，观察规律
+	bool findNumberIn2DArray(vector<vector<int>>& matrix, int target) {
+		if (matrix.size() == 0 || matrix[0].size() == 0) {
+			return false;
+		}
+		int rows = matrix.size();
+		int cols = matrix[0].size();
+
+		int row = 0;
+		int col = cols - 1;
+		while (row < rows && col >= 0) {
+			int num = matrix[row][col];
+			if (num == target) {
+				return true;
+			}
+			else if (num > target) {
+				col--;
+			}
+			else {
+				row++;
+			}
+		}
+		return false;
+	}
+
+#pragma region 搜索与回溯
+
+	//剑指offer26
+	bool isSubStructure(TreeNode* A, TreeNode* B) {
+		return(A != nullptr && B != nullptr) && (recur(A, B) || isSubStructure(A->left, B) || isSubStructure(A->right, B));//当前节点的判断，和左右子节点的判断，先找A当前层和左右子树有没有B的根节点
+	}
+	bool recur(TreeNode* A, TreeNode* B) {
+		if (B == nullptr) {
+			return true;
+		}
+		if (A == nullptr || A->val != B->val) {
+			return false;
+		}
+		return recur(A->left, B->left) && recur(A->right, B->right);//如果当前B节点不为空还和A相等，就是根节点对上了，再去测他的左右子树是否结构一致
+	}
+
+	//剑指offer27
+	TreeNode* mirrorTree(TreeNode* root) {
+		if (root == nullptr) {
+			return nullptr;
+		}
+		//递归镜像左子树右子树
+		TreeNode* left = mirrorTree(root->left);
+		TreeNode* right = mirrorTree(root->right);
+
+		root->left = right;
+		root->right = left;
+
+		return root;
+	}
+
+	//剑指offer28
+	bool isSymmetric(TreeNode* root) {
+		return root == nullptr ? true : check(root->left, root->right);
+	}
+	bool check(TreeNode* a, TreeNode* b) {
+		if (a == nullptr && b == nullptr) {
+			return true;
+		}
+		if (a == nullptr || b == nullptr || a->val != b->val) {
+			return false;
+		}
+		return check(a->left, b->right) && check(a->right, b->left);
+	}
+#pragma endregion
 };
 class MinStack {
 	stack<int> mainStack;
@@ -2444,22 +2516,22 @@ public:
 };
 class ChunZhao {
 public:
-	int lengthOfLongestSubstring(string s) {
+	static int lengthOfLongestSubstring(string s) {
 		unordered_set<char> stringset;
 
 		int n = s.size();
 
-		int rk = -1;
-		int ans = 0;
+		int rk = 0;//窗口。从零开始计
+		int ans = 0;//结果
 		for (int i = 0; i < n; ++i) {
 			if (i > 0) {
-				stringset.erase(s[i - 1]);//左指针向右移动，所以要删除前面的字符
+				stringset.erase(s[i - 1]);//移除前一个，滑动窗口,因为如果有多个元素在set中，就表示这里面的都是不重复的，移除前一个，测新的是不是也符合标准
 			}
-			while (rk+1 < n && stringset.count(s[rk+1]) == 0) {//初始化rk=-1，所以需要rk+1来作为判断
-				stringset.insert(s[rk + 1]);
-				rk++;
+			while (rk < n && stringset.count(s[rk]) == 0) {
+				stringset.insert(s[rk]);
+				rk++;//符合就测下一个
 			}
-			ans = max(ans, rk - i + 1);
+			ans = max(ans, rk - i);//比较最大值，rk是当前循环最后一个符合要求的位置，i是当前开头的位置，取差值就能够获得长度
 		}
 		return ans;
 	}
@@ -2534,27 +2606,27 @@ public:
 	vector<vector<int>> threeSum(vector<int>& nums) {
 		int n = nums.size();
 
-		sort(nums.begin(), nums.end());
+		sort(nums.begin(), nums.end());//先按照从小到大排序
 
 		vector<vector<int>> ans;
 
 		for (int first = 0; first < n; ++first) {
 			if (first > 0 && nums[first] == nums[first - 1]) {
-				continue;
+				continue;//如果和上一个数一样，跳过避免重复记录
 			}
 
-			int third = n - 1;
-			int target = -nums[first];
+			int third = n - 1;//定义第三个数在末尾
+			int target = -nums[first];//定义最终需要凑成零的目标
 			for (int second = first + 1; second < n; ++second) {
 				if (second > first + 1 && nums[second] == nums[second - 1]) {
-					continue;
+					continue;//避免重复搜索
 				}
 
 				while (second < third && nums[second] + nums[third] > target) {
-					--third;
+					--third;//大于目标的话，证明第三个数太大了，往左一格
 				}
 				if (second == third) {
-					break;
+					break;//找完了整个也没找到，证明这个路子走不通
 				}
 				if (nums[second] + nums[third] == target) {
 					ans.push_back({ nums[first],nums[second],nums[third] });
@@ -2563,7 +2635,7 @@ public:
 		}
 		return ans;
 	}
-	//运用了前后缀和的思路，不过只是新建一个数组储存前后缀和结果
+	//运用了前后缀和的思路，两次遍历存储
 	vector<int> productExceptSelf(vector<int>& nums) {
 		int n = nums.size();
 		vector<int> ans(n, 1);
@@ -2572,6 +2644,7 @@ public:
 		for (int i = 1; i < n; ++i) {
 			ans[i] = ans[i - 1] * nums[i - 1];
 		}
+		//循环完之后，ans里面的数值就代表这个数之前所有的数的乘积，完成了一半，所以还要后往前再循环一边
 
 		//新建一个变量R，存储后缀，然后在每一次循环时先将上一次的后缀存进ans数组中
 		int R = 1;
@@ -2586,21 +2659,22 @@ public:
 	string addStrings(string num1, string num2) {
 		int i = num1.size() - 1;
 		int j = num2.size() - 1;
-		int add = 0;
+		int add = 0;//进位数
 		string ans = "";
 		while (i >= 0 || j >= 0 || add != 0) {
 			int x = i >= 0 ? num1[i] - '0' : 0;
 			int y = j >= 0 ? num2[j] - '0' : 0;
 			int result = x + y + add;
-			ans.push_back('0' + result % 10);
-			add = result / 10;
+			ans.push_back('0' + result % 10);//再转成字符
+			add = result / 10;//设置进位
 
 			i--;
 			j--;
 		}
-		reverse(ans.begin(), ans.end());
+		reverse(ans.begin(), ans.end());//最后反转字符串
 		return ans;
 	}
+
 	 static int subarraysDivByK(vector<int>& nums, int k) {
 		unordered_map<int, int> _map = { {0,1} };
 		int ans = 0;
@@ -2613,10 +2687,29 @@ public:
 			if (_map.count(mod)) {
 				ans += _map[mod];
 			}
+			//先把当前的数加入ans之后再更新
 			++_map[mod];
 		}
 		return ans;
 	 }
+
+	 //类似上一题,这里也是利用前缀和，然后判断有没有等于他们和目标差值的结果，有的话加进去
+	 int subarraySum(vector<int>& nums, int k) {
+		 unordered_map<int, int> hash = { {0,1} };
+		 int n = nums.size();
+		 int sum = 0;
+		 int ans = 0;
+		 for (int i = 0; i < nums.size(); ++i) {
+			 sum += nums[i];
+			 int minus = sum - k;
+			 if (hash.count(minus)) {
+				 ans += hash[minus];
+			 }
+			 hash[sum]++;//如果没有结果，因为是相加，不是上题的相除，所以加上自身
+		 }
+		 return ans;
+	 }
+
 	//并查集
 	//第一题
 	 //dfs解法
@@ -2632,7 +2725,7 @@ public:
 			 for (int j = 0; j < c; ++j) {
 				 if (grid[i][j] == '1') {
 					 ++ans;
-					 dfs(grid, i, j);
+					 dfs(grid, i, j);//dfs将能连成岛屿的在计数后全部置为0，这样避免重复搜索
 				 }
 			 }
 		 }
@@ -2670,8 +2763,10 @@ public:
 		 }
 		 	 return true;
 	 }
+
 	 //动态规划
 	 //第一题
+	 //回文串去掉头尾一个字母还是回文串，可以用动态规划思想
 	 static string longestPalindrome(string s) {
 		 int n = s.size();
 		 if (n < 2) {
@@ -2687,14 +2782,14 @@ public:
 		 for (int j = 1; j < n; ++j) {
 			 for (int i = 0; i < j; ++i) {
 				 if (s[i] != s[j]) {
-					 dp[i][j] = false;
+					 dp[i][j] = false;//如果不相等的话，就设为false
 				 }
 				 else {
 					 if (j - i < 3) {
-						 dp[i][j] = true;
+						 dp[i][j] = true;//相等但是小于字符串长度小于三，除开两个一样的字符，中间的字符不管怎么样都符合回文串，直接设成true
 					 }
 					 else {
-						 dp[i][j] = dp[i + 1][j - 1];
+						 dp[i][j] = dp[i + 1][j - 1];//大于三的话，还需要考虑内部成不成回文串，dp游览内部
 					 }
 				 }
 
@@ -2706,6 +2801,53 @@ public:
 		 }
 		 return s.substr(begin, begin + maxlen - 1);
 	 }
+
+	 //第二题
+	 static int maxSubArray(vector<int>& nums) {
+		 int n = nums.size();
+		 int ans;
+		 vector<int> dp(n + 1);
+		 dp[0] = 0;
+		 for (int i = 1; i <= n; ++i) {
+			 dp[i] = max(dp[i - 1] + nums[i - 1], nums[i - 1]);
+			 ans = max(ans, dp[i]);
+		 }
+		 return ans;
+	 }
+
+	 //第三题,Dp专题也有
+	 int trap(vector<int>& height) {
+		 int n = height.size();
+		 vector<int> leftDp(n);
+		 vector<int> rightDp(n);
+		 int ans = 0;
+		 leftDp[0] = height[0];
+		 for (int i = 1; i < n; ++i) {
+			 leftDp[i] = max(leftDp[i - 1], height[i]);
+		 }
+		 rightDp[n - 1] = height[n - 1];
+		 for (int i = n - 2; i >= 0; i--) {
+			 rightDp[i] = max(rightDp[i + 1], height[i]);
+		 }
+
+		 for (int i = 0; i < n; ++i) {
+			 ans += min(leftDp[i], rightDp[i]) - height[i];
+		 }
+		 return ans;
+	 }
+
+	 //第四题
+	 int maxScoreSightseeingPair(vector<int>& values) {
+		 int ans = 0, mx = values[0] + 0;
+		 for (int j = 1; j < values.size(); ++j) {
+			 ans = max(ans, mx + values[j] - j);
+			 // 边遍历边维护
+			 //代替了更新values[i]+i的二次遍历
+			 //一次遍历中就可以更新，找到最大的
+			 mx = max(mx, values[j] + j);
+		 }
+		 return ans;
+	 }
 };
 //春招冲刺题
 class LRUCache {
@@ -2713,7 +2855,7 @@ private:
 	int _capacity;
 	list<int> keyList;
 	//list<int>::iterator利用迭代器记录列表中元素的位置
-	unordered_map<int, pair<int, list<int>::iterator>> _map;
+	unordered_map<int, pair<int, list<int>::iterator>> _map;//重点
 
 	void Insert(int key, int value) {
 		keyList.push_back(key);
@@ -2731,6 +2873,7 @@ public:
 			//迭代器->second指的就是在哈希表中的value元素，再有一个second就是value元素中的second
 			keyList.erase(it->second.second);
 			keyList.push_back(key);
+			//根据题意，get的元素如果存在需要将元素位置更新到最新的位置
 			_map[key].second = (--keyList.end());
 			return it->second.first;
 		}
@@ -2754,7 +2897,8 @@ public:
 		}
 	}
 };
+
 int main() {
-	string test = "cbbd";
-	ChunZhao::longestPalindrome(test);
+	vector<int> num = { -2,1,-3,4,-1,2,1,-5,4 };
+	ChunZhao::maxSubArray(num);
 }
