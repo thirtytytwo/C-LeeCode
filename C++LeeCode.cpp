@@ -3,8 +3,8 @@
 #include <vector>
 #include "limits.h"
 #include <algorithm>
-#include <queue>;
-#include <stack>;
+#include <queue>
+#include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <math.h>
@@ -12,6 +12,7 @@
 #include <string>
 #include <set>
 #include <numeric>
+#include <list>
 
 using namespace std;
 
